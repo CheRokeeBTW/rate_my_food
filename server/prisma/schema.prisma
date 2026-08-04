@@ -11,6 +11,18 @@ datasource db {
   provider = "postgresql"
 }
 
+model RefreshToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revokedAt DateTime?
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -20,6 +32,7 @@ model User {
 
   posts     Post[]
   ratings   Rating[]
+  refreshTokens RefreshToken[]
 }
 
 model Post {

@@ -28,11 +28,12 @@ export class PostsService {
     return post;
   }
 
-  createPost(dto: CreatePostDto) {
+  createPost(dto: CreatePostDto, userId: string) {
     return this.prisma.post.create({
       data: {
         title: dto.title,
         imageUrl: dto.imageUrl,
+        authorId: userId,
       },
     });
   }

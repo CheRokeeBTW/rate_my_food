@@ -9,7 +9,7 @@ export class UsersService {
         private readonly prisma: PrismaService,
     ) {}
 
-    getUserId(id: string) {
+    getUserById(id: string) {
         return this.prisma.user.findUnique({
             where: {
                 id,
@@ -17,7 +17,7 @@ export class UsersService {
         })
     }
 
-    getUserEmail(email: string) {
+    getUserByEmail(email: string) {
         return this.prisma.user.findUnique({
             where: {
                 email,
