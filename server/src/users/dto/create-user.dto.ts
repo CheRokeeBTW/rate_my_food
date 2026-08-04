@@ -1,7 +1,6 @@
 import { IsString, Min, IsUrl, Max, MaxLength, IsEmail, MinLength } from "class-validator";
 
 export class CreateUserDto {
-    
     @IsEmail()
     email!: string;
 
