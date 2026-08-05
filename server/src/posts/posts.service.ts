@@ -51,9 +51,9 @@ export class PostsService {
 
     return this.prisma.post.update({
         where: {
-        id,
+          id,
         },
-        data: dto,
+          data: dto,
     });
   }
 

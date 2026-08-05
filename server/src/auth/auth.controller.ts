@@ -1,8 +1,9 @@
-import { Controller, Post, Body, Res, Req, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Res, Req, UnauthorizedException, UseGuards, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterAuthDto } from './dto/register.dto';
-import type { Response, Request, response } from 'express';
+import type { Response, Request } from 'express';
 import { NotFoundException } from '@nestjs/common';
+import { JwtAuthGuard } from './guards/jwt-auth.guards';
 
 @Controller('auth')
 export class AuthController {
@@ -83,4 +84,17 @@ export class AuthController {
             message: 'Logged out successfully',
         }
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('me')
+    getMe(@Req() request: Request) {
+        const userId = request.user?.sub;
+
+        if(!userId){
+            throw new UnauthorizedException('User not found')
+        }
+
+        return this.authService.getMe(userId);
+    }
+    
 }
