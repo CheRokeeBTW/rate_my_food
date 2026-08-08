@@ -1,8 +1,9 @@
-import { Controller, Get, Param, Post, Body, Patch, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Patch, Delete, UseGuards, Req } from '@nestjs/common';
 import { PostsService } from './posts.service.js';
 import { CreatePostDto } from './dto/create-post.dto/create-post.dto.js';
 import { UpdatePostDto } from './dto/create-post.dto/update-post.dto.js';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards.js';
+import type { Request } from 'express';
 
 @Controller('posts')
 export class PostsController {
@@ -23,7 +24,13 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  createPost(@Body() dto: CreatePostDto, userId: string) {
+  createPost(
+    @Body() dto: CreatePostDto,
+    @Req() req: Request,
+  ) {
+    const userId = req.user!.sub;
+
+
     return this.postsService.createPost(dto, userId)
   }
 
