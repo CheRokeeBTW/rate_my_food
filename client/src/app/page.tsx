@@ -5,6 +5,7 @@ import { useState } from "react";
 import RegisterForm from "@/components/auth/RegisterForm";
 import LoginForm from "@/components/auth/LoginForm";
 import NavBar from "@/components/navbar/NavBar";
+import UploadModal from "@/components/upload/UploadModal";
 
 export default function Home() {
   const [authModal, setAuthModal] = useState<"register" | "login" | null>(null);
@@ -30,6 +31,7 @@ export default function Home() {
                 onSwitchToRegister={() => setAuthModal("register")}
             />
         )}
+        {/* <UploadModal onClose = {() => setAuthModal(null)}  /> */}
     </div>
   );
 }

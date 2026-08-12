@@ -6,6 +6,7 @@ declare global {
       user?: JwtPayload & {
         sub: string;
         username: string;
+        upload: string;
       };
     }
   }

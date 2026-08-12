@@ -20,11 +20,18 @@ import { JwtAuthGuard } from './guards/jwt-auth.guards';
         },
       }),
     }),
+
     UsersModule,
     SessionsModule,
   ],
+
   controllers: [AuthController],
-  providers: [AuthService, JwtAuthGuard],
+
+  providers: [
+    AuthService,
+    JwtAuthGuard,
+  ],
+
   exports: [
     JwtModule,
     JwtAuthGuard,
