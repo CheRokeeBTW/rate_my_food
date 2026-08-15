@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-900">
       <header className="flex w-full justify-end">
-        <NavBar onLoginClick={() => setAuthModal("login")}/>
+        <NavBar onRequireAuth={() => setAuthModal("login")}/>
         </header>
       <main className="flex min-h-screen justify-center items-center">
         <Feed onRequireAuth={() => setAuthModal("login")}/>

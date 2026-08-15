@@ -17,7 +17,6 @@ export function Feed({ onRequireAuth } : FeedProps){
         console.log('Selected:', value);
     };
 
-
     return(
         <div>
             <FoodCard title = "Title Holder" imageUrl = {FoodImg.src} />

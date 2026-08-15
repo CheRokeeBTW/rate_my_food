@@ -1,27 +1,11 @@
 "use client";
 
-import {
-  Camera,
-  RotateCcw,
-  RotateCw,
-  Trash2,
-  Upload,
-  X,
-} from "lucide-react";
-
+import { Camera, RotateCcw, RotateCw, Trash2, Upload, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-import Cropper, {
-  Area,
-  Point,
-} from "react-easy-crop";
-
-import {
-  uploadToCloudinary,
-  CloudinaryUploadResponse,
-} from "@/app/services/cloudinary.service";
-
+import Cropper, { Area, Point } from "react-easy-crop";
+import { uploadToCloudinary, CloudinaryUploadResponse } from "@/app/services/cloudinary.service";
 import { getCroppedImage } from "./cropImage";
+import { createPost } from "@/app/services/posts.service";
 
 type UploadModalProps = {
   onClose: () => void;
@@ -35,40 +19,21 @@ const ALLOWED_TYPES = [
   "image/webp",
 ];
 
-export default function UploadModal({
-  onClose,
-}: UploadModalProps) {
+export default function UploadModal({ onClose }: UploadModalProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-
   const [isDragging, setIsDragging] = useState(false);
-
-  const [crop, setCrop] = useState<Point>({
-    x: 0,
-    y: 0,
-  });
-
+  const [crop, setCrop] = useState<Point>({x: 0, y: 0});
   const [zoom, setZoom] = useState(1);
-
   const [rotation, setRotation] = useState(0);
-
-  const [croppedAreaPixels, setCroppedAreaPixels] =
-    useState<Area | null>(null);
-
-  const [isUploading, setIsUploading] =
-    useState(false);
-
-  const [uploadProgress, setUploadProgress] =
-    useState(0);
-
-  const [error, setError] = useState<string | null>(
-    null,
-  );
-
-  const [uploadedImage, setUploadedImage] =
-    useState<CloudinaryUploadResponse | null>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<CloudinaryUploadResponse | null>(null);
+  const [title, setTitle] = useState("");
+  const [isCreatingPost, setIsCreatingPost] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -109,7 +74,6 @@ export default function UploadModal({
     setFile(file);
     setPreview(url);
 
-    // reset editor
     setCrop({ x: 0, y: 0 });
     setZoom(1);
     setRotation(0);
@@ -117,22 +81,17 @@ export default function UploadModal({
     setUploadedImage(null);
   };
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
 
     if (!selectedFile) return;
 
     selectFile(selectedFile);
 
-    // Allows selecting the same file again
     e.target.value = "";
   };
 
-  const handleDragOver = (
-    e: React.DragEvent<HTMLDivElement>,
-  ) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
 
     if (!isUploading) {
@@ -148,9 +107,7 @@ export default function UploadModal({
     setIsDragging(false);
   };
 
-  const handleDrop = (
-    e: React.DragEvent<HTMLDivElement>,
-  ) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
 
     setIsDragging(false);
@@ -165,14 +122,9 @@ export default function UploadModal({
   };
 
   const handleCropComplete = useCallback(
-    (
-      _croppedArea: Area,
-      croppedAreaPixels: Area,
-    ) => {
-      setCroppedAreaPixels(croppedAreaPixels);
-    },
-    [],
-  );
+    (_croppedArea: Area, croppedAreaPixels: Area) => 
+      {setCroppedAreaPixels(croppedAreaPixels)}, 
+    []);
 
   const removeImage = () => {
     if (isUploading) return;
@@ -193,13 +145,9 @@ export default function UploadModal({
     setError(null);
   };
 
-  const rotateLeft = () => {
-    setRotation((prev) => prev - 90);
-  };
+  const rotateLeft = () => {setRotation((prev) => prev - 90)};
 
-  const rotateRight = () => {
-    setRotation((prev) => prev + 90);
-  };
+  const rotateRight = () => {setRotation((prev) => prev + 90)};
 
   const resetEditor = () => {
     setCrop({ x: 0, y: 0 });
@@ -240,24 +188,6 @@ export default function UploadModal({
 
       setUploadedImage(result);
 
-      /*
-       * IMPORTANT:
-       *
-       * At this point Cloudinary has the image.
-       *
-       * Next step is:
-       *
-       * POST /posts
-       *
-       * with:
-       *
-       * result.secure_url
-       * result.public_id
-       * result.width
-       * result.height
-       *
-       */
-
     } catch (err) {
       console.error(err);
 
@@ -271,9 +201,40 @@ export default function UploadModal({
     }
   };
 
-  // -----------------------------------------
-  // UI
-  // -----------------------------------------
+  const handleCreatePost = async () => {
+    if (!uploadedImage) {
+      return;
+    }
+
+    if (!title.trim()) {
+      setError("Please enter a title");
+      return;
+    }
+
+    setError(null);
+    setIsCreatingPost(true);
+
+    try {
+      const post = await createPost({
+        title: title.trim(),
+        imageUrl: uploadedImage.secure_url,
+      });
+
+      console.log("Post created:", post);
+
+      onClose();
+    } catch (err) {
+      console.error(err);
+
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to create post");
+      }
+    } finally {
+      setIsCreatingPost(false);
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
@@ -299,10 +260,6 @@ export default function UploadModal({
             <X size={22} />
           </button>
         </div>
-
-        {/* -------------------------------- */}
-        {/* No image selected */}
-        {/* -------------------------------- */}
 
         {!preview && (
           <>
@@ -403,7 +360,7 @@ export default function UploadModal({
               <button
                 type="button"
                 onClick={rotateLeft}
-                className="rounded-lg bg-zinc-800 p-2 text-zinc-300 transition hover:bg-zinc-700 hover:text-white"
+                className="rounded-lg bg-zinc-800 p-2 text-zinc-300 transition hover:bg-zinc-700 hover:text-white hover:cursor-pointer"
               >
                 <RotateCcw size={18} />
               </button>
@@ -411,7 +368,7 @@ export default function UploadModal({
               <button
                 type="button"
                 onClick={rotateRight}
-                className="rounded-lg bg-zinc-800 p-2 text-zinc-300 transition hover:bg-zinc-700 hover:text-white"
+                className="rounded-lg bg-zinc-800 p-2 text-zinc-300 transition hover:bg-zinc-700 hover:text-white hover:cursor-pointer"
               >
                 <RotateCw size={18} />
               </button>
@@ -419,7 +376,7 @@ export default function UploadModal({
               <button
                 type="button"
                 onClick={resetEditor}
-                className="ml-auto rounded-lg px-3 py-2 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                className="ml-auto rounded-lg px-3 py-2 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white hover:cursor-pointer"
               >
                 Reset
               </button>
@@ -427,7 +384,7 @@ export default function UploadModal({
               <button
                 type="button"
                 onClick={removeImage}
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 hover:bg-red-500/10"
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:cursor-pointer"
               >
                 <Trash2 size={17} />
                 Remove
@@ -440,7 +397,7 @@ export default function UploadModal({
               <button
                 type="button"
                 onClick={() => inputRef.current?.click()}
-                className="text-sm text-zinc-400 hover:text-white"
+                className="text-sm text-zinc-400 hover:text-white hover:cursor-pointer"
               >
                 Replace image
               </button>
@@ -483,20 +440,57 @@ export default function UploadModal({
         )}
 
         {uploadedImage && (
-          <div className="mt-5 rounded-xl bg-green-500/10 p-4">
+          <div className="mt-5 space-y-4">
+            {/* Image preview */}
+            <div className="overflow-hidden rounded-xl">
+              <img
+                src={uploadedImage.secure_url}
+                alt="Uploaded food"
+                className="h-64 w-full object-cover"
+              />
+            </div>
 
-            <p className="text-sm font-medium text-green-400">
-              Image uploaded successfully
-            </p>
+            {/* Success message */}
+            <div className="rounded-xl bg-green-500/10 p-4">
+              <p className="text-sm font-medium text-green-400">
+                Image uploaded successfully
+              </p>
+            </div>
 
-            <p className="mt-1 break-all text-xs text-zinc-500">
-              {uploadedImage.public_id}
-            </p>
+            {/* Title */}
+            <div>
+              <label
+                htmlFor="post-title"
+                className="mb-2 block text-sm font-medium text-zinc-300"
+              >
+                Title
+              </label>
 
+              <input
+                id="post-title"
+                type="text"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  setError(null);
+                }}
+                placeholder="What food is this?"
+                maxLength={100}
+                className={`w-full rounded-xl border bg-zinc-800 px-4 py-3 text-white outline-none transition ${
+                  error
+                    ? "border-red-500"
+                    : "border-zinc-700 focus:border-green-500"
+                }`}
+              />
+
+              <div className="mt-1 flex justify-end">
+                <span className="text-xs text-zinc-500">
+                  {title.length}/100
+                </span>
+              </div>
+            </div>
           </div>
         )}
-
-        {/* Error */}
 
         {error && (
           <p className="mt-4 text-sm text-red-400">
@@ -504,37 +498,48 @@ export default function UploadModal({
           </p>
         )}
 
-        <div className="mt-6 flex justify-end gap-3">
+      <div className="mt-6 flex justify-end gap-3">
 
+        <button
+          type="button"
+          onClick={onClose}
+          disabled={isUploading || isCreatingPost}
+          className="rounded-full px-5 py-2 text-sm text-zinc-300 transition hover:bg-zinc-800 disabled:opacity-40 hover:cursor-pointer"
+        >
+          Cancel
+        </button>
+
+        {!uploadedImage && (
           <button
             type="button"
-            onClick={onClose}
-            disabled={isUploading}
-            className="rounded-full px-5 py-2 text-sm text-zinc-300 transition hover:bg-zinc-800 disabled:opacity-40"
+            disabled={
+              !preview ||
+              !croppedAreaPixels ||
+              isUploading
+            }
+            onClick={handleUpload}
+            className="flex items-center gap-2 rounded-full bg-green-500 px-6 py-2 font-medium text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-40 hover:cursor-pointer"
           >
-            Cancel
+            <Upload size={17} />
+
+            {isUploading
+              ? "Uploading..."
+              : "Upload"}
           </button>
+        )}
 
-          {!uploadedImage && (
-            <button
-              type="button"
-              disabled={
-                !preview ||
-                !croppedAreaPixels ||
-                isUploading
-              }
-              onClick={handleUpload}
-              className="flex items-center gap-2 rounded-full bg-green-500 px-6 py-2 font-medium text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <Upload size={17} />
+        {uploadedImage && (
+          <button
+            type="button"
+            disabled={!title.trim() || isCreatingPost}
+            onClick={handleCreatePost}
+            className="rounded-full bg-green-500 px-6 py-2 font-medium text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-40 hover:cursor-pointer"
+          >
+            {isCreatingPost ? "Creating..." : "Create post"}
+          </button>
+        )}
 
-              {isUploading
-                ? "Uploading..."
-                : "Upload"}
-            </button>
-          )}
-
-        </div>
+      </div>
 
       </div>
     </div>
