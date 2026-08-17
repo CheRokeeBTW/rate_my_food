@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, Patch, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Patch, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { PostsService } from './posts.service.js';
 import { CreatePostDto } from './dto/create-post.dto/create-post.dto.js';
 import { UpdatePostDto } from './dto/create-post.dto/update-post.dto.js';
@@ -16,6 +16,13 @@ export class PostsController {
     getPosts(){
         return this.postsService.getPosts();
     }
+
+    @Get('feed')
+      getFeed(
+        @Query('cursor') cursor?: string,
+      ) {
+        return this.postsService.getFeed(cursor);
+      }
 
   @Get(':id')
   getPost(@Param('id') id: string) {

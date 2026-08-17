@@ -28,6 +28,51 @@ export class PostsService {
     return post;
   }
 
+  async getFeed(cursor?: string) {
+  const take = 5;
+
+  const posts = await this.prisma.post.findMany({
+    take: take + 1,
+
+    ...(cursor && {
+      cursor: {
+        id: cursor,
+      },
+      skip: 1,
+    }),
+
+    orderBy: {
+      createdAt: 'desc',
+    },
+
+    select: {
+      id: true,
+      title: true,
+      imageUrl: true,
+      createdAt: true,
+      author: {
+        select: {
+          id: true,
+          username: true,
+        },
+      },
+    },
+  });
+
+  const hasMore = posts.length > take;
+
+  const items = hasMore
+    ? posts.slice(0, take)
+    : posts;
+
+  return {
+    items,
+    nextCursor: hasMore
+      ? items[items.length - 1].id
+      : null,
+  };
+}
+
   createPost(dto: CreatePostDto, userId: string) {
     return this.prisma.post.create({
       data: {
