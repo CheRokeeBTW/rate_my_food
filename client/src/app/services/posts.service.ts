@@ -62,4 +62,24 @@ export async function getFeed( cursor?: string ): Promise<FeedResponse> {
   }
 
   return response.json();
+};
+
+export async function markPostViewed(postId: string) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}/view`,
+    {
+      method: "POST",
+      credentials: "include",
+    }
+  );
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+
+    throw new Error(
+      data?.message || "Failed to mark post as viewed"
+    );
+  }
+
+  return response.json();
 }

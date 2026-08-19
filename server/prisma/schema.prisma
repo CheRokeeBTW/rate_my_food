@@ -12,14 +12,14 @@ datasource db {
 }
 
 model RefreshToken {
-  id        String   @id @default(uuid())
-  tokenHash String   @unique
+  id        String @id @default(uuid())
+  tokenHash String @unique
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   expiresAt DateTime
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   revokedAt DateTime?
 }
 
@@ -30,9 +30,10 @@ model User {
   password  String
   createdAt DateTime @default(now())
 
-  posts     Post[]
-  ratings   Rating[]
+  posts         Post[]
+  ratings       Rating[]
   refreshTokens RefreshToken[]
+  postViews     PostView[]     @relation("UserPostViews")
 }
 
 model Post {
@@ -41,10 +42,11 @@ model Post {
   imageUrl  String
   createdAt DateTime @default(now())
 
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
 
-  ratings   Rating[]
+  ratings Rating[]
+  views   PostView[] @relation("PostViews")
 }
 
 model Rating {
@@ -52,12 +54,30 @@ model Rating {
   value     Int
   createdAt DateTime @default(now())
 
-  userId    String
-  postId    String
+  userId String
+  postId String
 
-  user      User     @relation(fields: [userId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
 }
 
+model PostView {
+  id String @id @default(uuid())
+
+  postId String
+  post   Post   @relation("PostViews", fields: [postId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation("UserPostViews", fields: [userId], references: [id], onDelete: Cascade)
+
+  visitorId String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+  @@unique([postId, visitorId])
+  @@index([userId])
+  @@index([visitorId])
+}

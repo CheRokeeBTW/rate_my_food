@@ -5,7 +5,7 @@ import FoodImg from '../../../public/FoodImg.jpeg';
 import SecondFoodImg from '../../../public/Siritho_iPhone_Food-2.jpg'
 import Rating from "./RatingBar";
 import { useRouter } from "next/navigation";
-import { getFeed, FeedPost } from "@/app/services/posts.service";
+import { getFeed, FeedPost, markPostViewed } from "@/app/services/posts.service";
 import { useState, useEffect } from "react";
 import { createRating, CreateRating } from "@/app/services/rating.service";
 
@@ -47,7 +47,7 @@ export function Feed({ onRequireAuth } : FeedProps){
 
     const loadMorePosts = async () => {
         if (!nextCursor || isFetching) {
-            return;
+            return [];
         }
 
         try {
@@ -61,30 +61,47 @@ export function Feed({ onRequireAuth } : FeedProps){
             ]);
 
             setNextCursor(data.nextCursor);
+
+            return data.items;
         } catch (err) {
             console.error("Failed to load more posts:", err);
+            return [];
         } finally {
             setIsFetching(false);
         }
     };
     
     const handleNext = async () => {
-        const nextIndex = currentIndex + 1;
-
-        if (nextIndex >= posts.length) {
+        if (!currentPost) {
             return;
         }
 
-        setCurrentIndex(nextIndex);
+        try {
+            await markPostViewed(currentPost.id);
 
-        const postsRemaining =
-            posts.length - nextIndex - 1;
+            const nextIndex = currentIndex + 1;
 
-        if (
-            postsRemaining <= PREFETCH_THRESHOLD &&
-            nextCursor
-        ) {
+            if (nextIndex < posts.length) {
+                setCurrentIndex(nextIndex);
+
+                const postsRemaining =
+                    posts.length - nextIndex - 1;
+
+                if (
+                    postsRemaining <= PREFETCH_THRESHOLD &&
+                    nextCursor
+                ) {
+                    loadMorePosts();
+                }
+
+                return;
+            }
+
             await loadMorePosts();
+
+            setCurrentIndex(nextIndex);
+        } catch (error) {
+            console.error("Failed to move to next post:", error);
         }
     };
 
@@ -94,7 +111,9 @@ export function Feed({ onRequireAuth } : FeedProps){
         };
 
         try{
-            const data = await createRating({ value, postId: currentPost.id });
+            await createRating({ value, postId: currentPost.id });
+
+            await handleNext();
         }
         catch (error) {
             console.error(error);

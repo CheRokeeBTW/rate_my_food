@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto/create-post.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { UpdatePostDto } from './dto/create-post.dto/update-post.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PostsService {
@@ -28,10 +29,40 @@ export class PostsService {
     return post;
   }
 
-  async getFeed(cursor?: string) {
+async getFeed(
+  cursor: string | undefined,
+  visitor: {
+    userId?: string;
+    visitorId?: string;
+  },
+) {
   const take = 5;
 
+  let where: Prisma.PostWhereInput;
+
+  if (visitor.userId) {
+    where = {
+      views: {
+        none: {
+          userId: visitor.userId,
+        },
+      },
+    };
+  } else if (visitor.visitorId) {
+    where = {
+      views: {
+        none: {
+          visitorId: visitor.visitorId,
+        },
+      },
+    };
+  } else {
+    throw new Error("No visitor identity");
+  }
+
   const posts = await this.prisma.post.findMany({
+    where,
+
     take: take + 1,
 
     ...(cursor && {
@@ -42,7 +73,7 @@ export class PostsService {
     }),
 
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
 
     select: {
@@ -50,6 +81,7 @@ export class PostsService {
       title: true,
       imageUrl: true,
       createdAt: true,
+
       author: {
         select: {
           id: true,
@@ -72,6 +104,58 @@ export class PostsService {
       : null,
   };
 }
+
+  async markPostViewed(
+    postId: string,
+    visitor: {
+      userId?: string;
+      visitorId?: string;
+    },
+  ) {
+    const post = await this.prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    if (visitor.userId) {
+      return this.prisma.postView.upsert({
+        where: {
+          postId_userId: {
+            postId,
+            userId: visitor.userId,
+          },
+        },
+        update: {},
+        create: {
+          postId,
+          userId: visitor.userId,
+        },
+      });
+    }
+
+    if (visitor.visitorId) {
+      return this.prisma.postView.upsert({
+        where: {
+          postId_visitorId: {
+            postId,
+            visitorId: visitor.visitorId,
+          },
+        },
+        update: {},
+        create: {
+          postId,
+          visitorId: visitor.visitorId,
+        },
+      });
+    }
+
+    throw new Error('No visitor identity');
+  }
 
   createPost(dto: CreatePostDto, userId: string) {
     return this.prisma.post.create({
