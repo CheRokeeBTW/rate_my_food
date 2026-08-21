@@ -88,19 +88,16 @@ export class AuthService {
             throw new UnauthorizedException('Refresh token has expired')
         }
 
-        await this.sessionService.revokeSession(session.id);
-
-        const newRefreshToken = await this.sessionService.createSession({
+        const newRefreshToken = await this.sessionService.rotateSession(
             refreshToken,
-            userId: session.userId,
-        });
+            session.userId,
+        );
 
         const payload = {
             sub: session.userId,
         };
 
-        const accessToken =
-            this.jwtService.sign(payload);
+        const accessToken = this.jwtService.sign(payload);
 
         return {
             accessToken,

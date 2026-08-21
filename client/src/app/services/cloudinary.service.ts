@@ -1,4 +1,4 @@
-import { getAccessToken } from './token.service';
+import { apiFetch } from './token.service';
 
 export type CloudinaryUploadResponse = {
   asset_id: string;
@@ -23,19 +23,11 @@ export type UploadPromise<T> = Promise<T> & {
 };
 
 export async function getCloudinarySignature() {
-  const token = getAccessToken();
 
-  if (!token) {
-    throw new Error('You must be logged in');
-  }
-
-  const response = await fetch(
+  const response = await apiFetch(
     `${process.env.NEXT_PUBLIC_API_URL}/cloudinary/signature`,
     {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     },
   );
 

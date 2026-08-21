@@ -72,7 +72,7 @@ export class AuthController {
         @Req() request: Request,
         @Res({ passthrough: true }) response: Response,
     ) {
-        const refreshToken = request.cookies.resfresh_token;
+        const refreshToken = request.cookies.refresh_token;
 
         if (refreshToken) {
             await this.authService.logout(refreshToken);

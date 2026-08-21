@@ -1,4 +1,4 @@
-import { getAccessToken } from "./token.service";
+import { apiFetch } from "./token.service";
 
 type CreatePostData = {
   title: string;
@@ -6,17 +6,11 @@ type CreatePostData = {
 };
 
 export async function createPost({ title, imageUrl } : CreatePostData) {
-    const accessToken = getAccessToken();
 
-    if (!accessToken) {
-        throw new Error("You must be logged in");
-    };
-
-    const response =  await fetch (`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
+    const response =  await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({ title, imageUrl }),
     });

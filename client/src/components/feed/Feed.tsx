@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { getFeed, FeedPost, markPostViewed } from "@/app/services/posts.service";
 import { useState, useEffect } from "react";
 import { createRating, CreateRating } from "@/app/services/rating.service";
+import { useTokenStore } from "@/stores/auth.sotres";
 
 type FeedProps = {
     onRequireAuth: () => void;
@@ -23,6 +24,9 @@ export function Feed({ onRequireAuth } : FeedProps){
     const [isFetching, setIsFetching] = useState(false);
     const router = useRouter();
     const currentPost = posts[currentIndex];
+    const token = useTokenStore(state => state.accessToken);
+
+    console.log(token, "TOKEN");
 
     console.log(currentPost);
 
@@ -120,6 +124,8 @@ export function Feed({ onRequireAuth } : FeedProps){
         }
     };
 
+    console.log(posts, "POSTS")
+
     if (!currentPost) {
         return (
             <div className="flex justify-center">
@@ -132,6 +138,12 @@ export function Feed({ onRequireAuth } : FeedProps){
         <div>
             <FoodCard post={currentPost} />
             <Rating onRate={handleRate} onRequireAuth={onRequireAuth}/>
+            <button
+                onClick={() => handleNext()}
+                className="flex justify-end w-full mt-7"
+            >
+                Skip
+            </button>
         </div>
     )
 }

@@ -1,4 +1,4 @@
-import { getAccessToken } from "./token.service";
+import { apiFetch } from "./token.service";
 
 export type CreateRating = {
     value: number;
@@ -6,17 +6,11 @@ export type CreateRating = {
 }
 
 export async function createRating({ value, postId }: CreateRating){
-    const accessToken = getAccessToken();
 
-    if(!accessToken){
-        throw new Error("You must be logged in")
-    };
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ratings`, {
+    const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ratings`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({ value, postId }),
     });

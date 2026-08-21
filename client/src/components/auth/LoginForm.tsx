@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Inter } from "next/font/google";
 import { loginUser } from "@/app/services/auth.service";
 import { X } from "lucide-react";
-import { setAccessToken } from "@/app/services/token.service";
+import { useTokenStore } from "@/stores/auth.sotres";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,6 +34,7 @@ export default function LoginForm({ onClose, onSwitchToRegister } : LoginFormPro
     const [errors, setErrors] = useState<Errors>(emptyErrors)
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
+    const setAccessToken = useTokenStore(state => state.setAccessToken);
 
     const handleLogin = async () => {
     setErrors(emptyErrors);

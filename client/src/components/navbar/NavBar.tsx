@@ -6,7 +6,7 @@ import signInImage from '../../../public/sign-in-3303.svg';
 import policyImage from '../../../public/terms-and-conditions-icon.svg';
 import Image from 'next/image';
 import UploadModal from '../upload/UploadModal';
-import { getAccessToken } from '@/app/services/token.service';
+import { useTokenStore } from '@/stores/auth.sotres';
 
 type NavBarProps = {
     onRequireAuth: () => void;
@@ -16,7 +16,7 @@ export default function NavBar({ onRequireAuth } : NavBarProps){
     const [uploadOpen, setUploadOpen] = useState(false);
 
     const checkLogin = () => {
-        const accessToken = getAccessToken();
+        const accessToken = useTokenStore(state => state.accessToken);
 
         if(!accessToken){
             onRequireAuth();

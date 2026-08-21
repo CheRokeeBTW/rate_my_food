@@ -2,7 +2,7 @@
 
 import { Star } from "lucide-react";
 import { useState } from "react";
-import { getAccessToken } from "@/app/services/token.service";
+import { useTokenStore } from "@/stores/auth.sotres";
 
 type RatingProps = {
     onRate: (value: number) => void;
@@ -16,7 +16,7 @@ export default function Rating({ onRate, onRequireAuth } : RatingProps) {
     const stars = Array.from({ length: 10 }, (_, index) => index + 1);
 
     const handleClick = (value: number) => {
-        const token = getAccessToken();
+        const token = useTokenStore(state => state.accessToken);
 
         if(!token){
             onRequireAuth();
