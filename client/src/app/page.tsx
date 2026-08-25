@@ -24,7 +24,6 @@ export default function Home() {
                 onSwitchToLogin={() => setAuthModal("login")}
             />
         )}
-
         {authModal === "login" && (
             <LoginForm
                 onClose={() => setAuthModal(null)}

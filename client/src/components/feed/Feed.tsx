@@ -136,7 +136,10 @@ export function Feed({ onRequireAuth } : FeedProps){
 
     return(
         <div>
-            <FoodCard post={currentPost} />
+            <FoodCard 
+                post={currentPost}
+                onSwipeLeft={handleNext} 
+            />
             <Rating onRate={handleRate} onRequireAuth={onRequireAuth}/>
             <button
                 onClick={() => handleNext()}
