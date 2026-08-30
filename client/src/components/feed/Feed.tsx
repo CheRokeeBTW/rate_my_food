@@ -124,7 +124,8 @@ export function Feed({ onRequireAuth } : FeedProps){
         }
     };
 
-    console.log(posts, "POSTS")
+    console.log(posts, "POSTS");
+    console.log(currentPost, "CURRENT POST");
 
     if (!currentPost) {
         return (

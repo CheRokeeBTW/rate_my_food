@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -33,5 +33,58 @@ export class UsersService {
             password: dto.password,
         },
         });
+    }
+
+   async getProfile(id: string){
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id,
+            },
+            select: {
+                id:true,
+                username: true,
+                createdAt: true,
+                posts: {
+                    select: {
+                        id: true,
+                        title: true,
+                        imageUrl: true,
+                        createdAt: true,
+                        ratings: {
+                            select: {
+                                value: true,
+                            },
+                        }  
+                    }
+                }
+            }
+        });
+
+        if(!user){
+            throw new NotFoundException('User not found');
+        }
+
+        const posts = user.posts.map(post => {
+            if(post.ratings.length === 0){
+                return {
+                    ...post,
+                    averageRating: null,
+                };
+            }
+
+            const sum = post.ratings.reduce((acc, rating) => acc + rating.value, 0);
+            const average = sum / post.ratings.length;
+            const { ratings, ...postData } = post;
+
+            return {
+                ...postData,
+                average,
+            };
+        });
+
+        return {
+            ...user,
+            posts,
+        };
     }
 }
