@@ -65,20 +65,21 @@ export class UsersService {
         }
 
         const posts = user.posts.map(post => {
+            const { ratings, ...postData } = post;
+
             if(post.ratings.length === 0){
                 return {
-                    ...post,
+                    ...postData,
                     averageRating: null,
                 };
             }
 
             const sum = post.ratings.reduce((acc, rating) => acc + rating.value, 0);
             const average = sum / post.ratings.length;
-            const { ratings, ...postData } = post;
 
             return {
                 ...postData,
-                average,
+                averageRating: average,
             };
         });
 

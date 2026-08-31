@@ -53,7 +53,6 @@ export class PostsController {
   ) {
     const userId = req.user!.sub;
 
-
     return this.postsService.createPost(dto, userId)
   }
 
