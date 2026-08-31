@@ -29,32 +29,32 @@ export default function Rating({ onRate, onRequireAuth } : RatingProps) {
 
     return(
         <div>
-        <div 
-        className="flex gap-2 justify-center mt-5 hover:cursor-pointer"
-        onMouseLeave={() => setHover(null)}
-        >
-            {stars.map(star => (
-                <button
-                    key = {star}
-                    onClick={() => handleClick(star)}
-                    onMouseEnter={() => setHover(star)}
-                    className={`hover:cursor-pointer ${hovered !== null
-                    ? star <= hovered
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "fill-transparent text-yellow-400"
-                    : "text-yellow-400"
-                   }`}
-                >
-                    <Star
-                        className="transition-transform duration-150 hover:scale-110"
-                        size={32} fill={star <= (hovered ?? selected ?? 0) ? "currentColor" : "none"} 
-                     />
-                </button>
-            ))}
-        </div>
-            <div className="flex justify-center mt-5 font-sans">
-                Rate this photo
+            <div 
+                className="flex gap-2 justify-center mt-5 hover:cursor-pointer"
+                onMouseLeave={() => setHover(null)}
+            >
+                {stars.map(star => (
+                    <button
+                        key = {star}
+                        onClick={() => handleClick(star)}
+                        onMouseEnter={() => setHover(star)}
+                        className={`hover:cursor-pointer ${hovered !== null
+                        ? star <= hovered
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "fill-transparent text-yellow-400"
+                        : "text-yellow-400"
+                    }`}
+                    >
+                        <Star
+                            className="transition-transform duration-150 hover:scale-110"
+                            size={32} fill={star <= (hovered ?? selected ?? 0) ? "currentColor" : "none"} 
+                        />
+                    </button>
+                ))}
             </div>
+                <div className="flex justify-center mt-5 font-sans">
+                    Rate this photo
+                </div>
         </div>
     )
 }
