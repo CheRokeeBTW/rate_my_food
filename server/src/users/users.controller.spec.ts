@@ -9,6 +9,7 @@ describe('UsersController', () => {
   const usersMock = {
     getProfile: jest.fn(),
     getUserById: jest.fn(),
+    updateUsername: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -91,6 +92,39 @@ describe('UsersController', () => {
 
       expect(usersMock.getUserById).toHaveBeenCalledWith(
         'user-1',
+      );
+    });
+  });
+
+  describe('updateUsername', () => {
+    it('should update a username', async () => {
+      const updatedUser = {
+        id: 'user-1',
+        username: 'newname',
+      };
+
+      const req = {
+        user: {
+          sub: 'user-1',
+        },
+      };
+
+      const dto = {
+        newUsername: 'newname',
+      };
+
+      usersMock.updateUsername.mockResolvedValue(updatedUser);
+
+      const result = await controller.updateUsername(
+        req as any,
+        dto,
+      );
+
+      expect(result).toEqual(updatedUser);
+
+      expect(usersMock.updateUsername).toHaveBeenCalledWith(
+        'user-1',
+        dto,
       );
     });
   });

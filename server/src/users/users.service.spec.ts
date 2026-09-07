@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { PrismaService } from 'prisma/prisma.service';
 
@@ -10,6 +10,7 @@ describe('UsersService', () => {
     user: {
       findUnique: jest.fn(),
       create: jest.fn(),
+      update: jest.fn(),
     },
   };
 
@@ -249,6 +250,102 @@ describe('UsersService', () => {
 
       expect(result.posts[0].averageRating).toBe(9);
       expect(result.posts[1].averageRating).toBe(7);
+    });
+  });
+
+  describe('updateUsername', () => {
+    it('should update the username', async () => {
+      const dto = {
+        newUsername: 'newname',
+      };
+
+      const updatedUser = {
+        id: 'user-1',
+        email: 'test@test.com',
+        username: 'newname',
+      };
+
+      prismaMock.user.findUnique.mockResolvedValue(null);
+
+      prismaMock.user.update.mockResolvedValue(updatedUser);
+
+      const result = await service.updateUsername('user-1', dto);
+
+      expect(result).toEqual(updatedUser);
+
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+        where: {
+          username: 'newname',
+        },
+      });
+
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: {
+          id: 'user-1',
+        },
+        data: {
+          username: 'newname',
+        },
+      });
+    });
+
+    it('should throw ConflictException if username is already taken', async () => {
+      const dto = {
+        newUsername: 'existinguser',
+      };
+
+      const existingUser = {
+        id: 'user-2',
+        username: 'existinguser',
+      };
+
+      prismaMock.user.findUnique.mockResolvedValue(existingUser);
+
+      await expect(
+        service.updateUsername('user-1', dto),
+      ).rejects.toThrow(ConflictException);
+
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+        where: {
+          username: 'existinguser',
+        },
+      });
+
+      // update should never happen
+      expect(prismaMock.user.update).not.toHaveBeenCalled();
+    });
+
+    it('should allow the user to keep their current username', async () => {
+      const dto = {
+        newUsername: 'testuser',
+      };
+
+      const existingUser = {
+        id: 'user-1',
+        username: 'testuser',
+      };
+
+      const updatedUser = {
+        id: 'user-1',
+        email: 'test@test.com',
+        username: 'testuser',
+      };
+
+      prismaMock.user.findUnique.mockResolvedValue(existingUser);
+      prismaMock.user.update.mockResolvedValue(updatedUser);
+
+      const result = await service.updateUsername('user-1', dto);
+
+      expect(result).toEqual(updatedUser);
+
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: {
+          id: 'user-1',
+        },
+        data: {
+          username: 'testuser',
+        },
+      });
     });
   });
 });

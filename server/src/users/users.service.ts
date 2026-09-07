@@ -90,7 +90,7 @@ export class UsersService {
         };
     }
 
-    async updateName(id: string, updateUserDto: UpdateUserDto){
+    async updateUsername(id: string, updateUserDto: UpdateUserDto){
         const { newUsername } = updateUserDto;
 
         const existingUser = await this.prisma.user.findUnique({

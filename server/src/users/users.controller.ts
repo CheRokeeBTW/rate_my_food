@@ -28,9 +28,9 @@ export class UsersController {
     ){
         const userId = req.user!.sub;
 
-        return this.usersService.updateName(userId, updateUserDto);
+        return this.usersService.updateUsername(userId, updateUserDto);
     }
-    
+
     @Get(':id')
     getUserId(@Param('id') id: string) {
         return this.usersService.getUserById(id);
