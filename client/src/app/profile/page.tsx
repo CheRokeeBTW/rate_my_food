@@ -67,48 +67,54 @@ export default function Profile () {
     
     console.log(posts, "ONLY POSTS");
 
+    if(isLoading) return(
+        <div className="flex justify-center items-center h-screen">
+            <div className="w-8 h-8 border-4 border-gray-300 border-t-white rounded-full animate-spin"></div>
+        </div>
+    )
+
     return (
         <div className="min-h-screen px-6 md:px-12 lg:px-20 pt-8 pb-16">
             <div className="flex flex-col items-center mb-12">
                 {!isUsernameLoading ? (
                     <div className="flex items-center gap-3 mb-5">
                         {ischangingName ? (
-                            <div className="flex flex-col items-center gap-2">
+                            <div className="flex items-center gap-2">
                                 <input
-                                    className="w-48 px-3 py-1.5 text-2xl font-bold tracking-tight outline-none border-b text-center"
+                                    className="w-48 px-3 py-1.5 text-2xl font-bold outline-none border-b text-center"
                                     autoFocus
                                     type="text"
                                     value={newUsername}
                                     onChange={(e) => setNewUsername(e.target.value)}
                                 />
-
-                                <div className="flex justify-between w-full">
                                     <button
-                                        className="min-w-20 h-8 rounded-full flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 transition-colors hover:cursor-pointer"
+                                        className="min-w-8 h-8 rounded-full flex items-center justify-center bg-blue-700 hover:bg-blue-600 transition-colors hover:cursor-pointer"
                                         onClick={handleUpdateUsername}
                                     >
-                                        Update
+                                        ✓
                                     </button>
                                     <button
-                                        className="min-w-20 h-8 rounded-full flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 transition-colors hover:cursor-pointer"
+                                        className="min-w-8 h-8 rounded-full flex items-center justify-center bg-red-700 hover:bg-red-600 transition-colors hover:cursor-pointer"
                                         onClick={() => setIsChangingName(false)}
                                     >
-                                        Cancel
+                                        ✕
                                     </button>
-                                </div>
+               
                             </div>
                         ) : (
                             <>
                                 <p className="text-3xl font-bold tracking-tight">
                                     {username}
                                 </p>
-                                <button className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-zinc-800 transition-colors duration-200 hover:cursor-pointer">
+                                <button 
+                                    className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-zinc-800 transition-colors duration-200 hover:cursor-pointer"
+                                    onClick={openUpdateUsername}
+                                >
                                     <Image
                                         src={editImg}
                                         alt="Edit profile"
                                         width={16}
                                         height={16}
-                                        onClick={openUpdateUsername}
                                     />
                                 </button>
                             </>
