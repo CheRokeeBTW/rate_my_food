@@ -20,9 +20,7 @@ export default function Profile () {
         return sum + postRating
     }, 0);
 
-    const average = postsWithRating.length > 0
-        ? total / postsWithRating.length
-        : 0;
+    const average = postsWithRating.length > 0 ? total / postsWithRating.length : 0;
 
     console.log(postsWithRating, "AVERAGE");
 
@@ -99,7 +97,6 @@ export default function Profile () {
                                     >
                                         ✕
                                     </button>
-               
                             </div>
                         ) : (
                             <>

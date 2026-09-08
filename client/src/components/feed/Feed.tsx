@@ -22,7 +22,7 @@ export function Feed({ onRequireAuth } : FeedProps){
     const [currentIndex, setCurrentIndex] = useState(0);
     const [nextCursor, setNextCursor] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);
-    const router = useRouter();
+    // const router = useRouter();
     const currentPost = posts[currentIndex];
     const token = useTokenStore(state => state.accessToken);
 
@@ -141,7 +141,7 @@ export function Feed({ onRequireAuth } : FeedProps){
                 post={currentPost}
                 onSwipeLeft={handleNext} 
             />
-            <Rating onRate={handleRate} onRequireAuth={onRequireAuth}/>
+            <Rating postId = {currentPost.id} onRate={handleRate} onRequireAuth={onRequireAuth}/>
             <button
                 onClick={() => handleNext()}
                 className="flex justify-end w-full mt-7"

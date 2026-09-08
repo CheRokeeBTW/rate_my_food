@@ -1,23 +1,26 @@
 "use client"
 
 import { Star } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTokenStore } from "@/stores/auth.sotres";
 
 type RatingProps = {
+    postId: string;
     onRate: (value: number) => void;
     onRequireAuth: () => void;
 };
 
-export default function Rating({ onRate, onRequireAuth } : RatingProps) {
+export default function Rating({ postId, onRate, onRequireAuth } : RatingProps) {
     const [hovered, setHover] = useState<number | null>(null);
     const [selected, setSelected] = useState<number | null>(null);
-
+    const token = useTokenStore(state => state.accessToken);
     const stars = Array.from({ length: 10 }, (_, index) => index + 1);
 
-    const handleClick = (value: number) => {
-        const token = useTokenStore(state => state.accessToken);
+    useEffect(() => {
+        setSelected(null)
+    }, [postId]); 
 
+    const handleClick = (value: number) => {
         if(!token){
             onRequireAuth();
             return;
