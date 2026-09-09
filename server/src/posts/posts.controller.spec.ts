@@ -4,6 +4,7 @@ import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
 import { getVisitorKey } from '../utils/visitorKey';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 
 jest.mock('../utils/visitorKey');
 
@@ -35,6 +36,10 @@ describe('PostsController', () => {
       ],
     })
       .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: jest.fn().mockReturnValue(true),
+      })
+      .overrideGuard(OptionalJwtAuthGuard)
       .useValue({
         canActivate: jest.fn().mockReturnValue(true),
       })

@@ -3,9 +3,9 @@ import { PostsService } from './posts.service.js';
 import { CreatePostDto } from './dto/create-post.dto/create-post.dto.js';
 import { UpdatePostDto } from './dto/create-post.dto/update-post.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards.js';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard.js';
 import type { Request, Response } from 'express';
 import { getVisitorKey } from '../utils/visitorKey.js';
-import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard.js';
 
 @Controller('posts')
 export class PostsController {
