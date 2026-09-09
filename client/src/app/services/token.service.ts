@@ -1,4 +1,4 @@
-import { useTokenStore } from "@/stores/auth.sotres";
+import { useTokenStore } from "@/stores/auth.stores";
 
 let refreshPromise: Promise<string | null> | null = null;
 
@@ -46,6 +46,8 @@ export async function apiFetch(
 ) {
     const accessToken =
         useTokenStore.getState().accessToken;
+
+    console.log("API FETCH TOKEN:", accessToken);
 
     const headers = new Headers(init.headers);
 

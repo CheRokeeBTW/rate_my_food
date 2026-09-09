@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { refreshAccessToken } from "../services/token.service";
-import { useTokenStore } from "@/stores/auth.sotres";
+import { useTokenStore } from "@/stores/auth.stores";
 
 export default function AuthProvider({
     children,
@@ -15,11 +15,7 @@ export default function AuthProvider({
     useEffect(() => {
         async function initializeAuth() {
             try {
-                const data = await refreshAccessToken();
-
-                setAccessToken(data)
-            } catch {
-                setAccessToken(null);
+                await refreshAccessToken();
             } finally {
                 setInitialized(true);
             }

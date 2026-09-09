@@ -11,7 +11,7 @@ export function getVisitorKey(
 
   if (authenticatedUser) {
     return {
-      userId: authenticatedUser.id,
+      userId: authenticatedUser.sub,
       visitorId: undefined,
     };
   }
@@ -28,6 +28,10 @@ export function getVisitorKey(
       maxAge: 1000 * 60 * 60 * 24 * 365,
     });
   }
+
+  console.log("VISITOR KEY:", {
+    user: req.user,
+});
 
   return {
     userId: undefined,

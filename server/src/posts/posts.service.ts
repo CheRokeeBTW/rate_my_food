@@ -36,6 +36,7 @@ async getFeed(
     visitorId?: string;
   },
 ) {
+  console.log("FEED VISITOR:", visitor);
   const take = 5;
 
   let where: Prisma.PostWhereInput;

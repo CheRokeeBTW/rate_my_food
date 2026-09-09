@@ -5,6 +5,7 @@ import { UpdatePostDto } from './dto/create-post.dto/update-post.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards.js';
 import type { Request, Response } from 'express';
 import { getVisitorKey } from '../utils/visitorKey.js';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard.js';
 
 @Controller('posts')
 export class PostsController {
@@ -18,6 +19,7 @@ export class PostsController {
         return this.postsService.getPosts();
     }
 
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('feed')
   getFeed(
     @Query('cursor') cursor: string | undefined,
@@ -29,6 +31,7 @@ export class PostsController {
     return this.postsService.getFeed(cursor, visitor);
   }
 
+  @UseGuards(OptionalJwtAuthGuard)
   @Post(':id/view')
   markPostViewed(
     @Param('id') id: string,

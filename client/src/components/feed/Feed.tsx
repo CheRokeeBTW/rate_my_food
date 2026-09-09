@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { getFeed, FeedPost, markPostViewed } from "@/app/services/posts.service";
 import { useState, useEffect } from "react";
 import { createRating, CreateRating } from "@/app/services/rating.service";
-import { useTokenStore } from "@/stores/auth.sotres";
+import { useTokenStore } from "@/stores/auth.stores";
 
 type FeedProps = {
     onRequireAuth: () => void;
@@ -25,14 +25,17 @@ export function Feed({ onRequireAuth } : FeedProps){
     // const router = useRouter();
     const currentPost = posts[currentIndex];
     const token = useTokenStore(state => state.accessToken);
+    const isInitialized = useTokenStore(state => state.isInitialized);
 
     console.log(token, "TOKEN");
 
     console.log(currentPost);
 
     useEffect(() => {
+        if(!isInitialized) return;
+
         loadInitialFeed();
-    }, []);
+    }, [isInitialized]);
 
     const loadInitialFeed = async () => {
         try {
@@ -116,12 +119,12 @@ export function Feed({ onRequireAuth } : FeedProps){
 
         try{
             await createRating({ value, postId: currentPost.id });
-
-            await handleNext();
         }
         catch (error) {
             console.error(error);
         }
+
+        await handleNext();
     };
 
     console.log(posts, "POSTS");

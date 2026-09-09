@@ -49,7 +49,7 @@ export async function getFeed( cursor?: string ): Promise<FeedResponse> {
     url += `?cursor=${encodeURIComponent(cursor)}`;
   }
 
-  const response = await fetch(url);
+  const response = await apiFetch(url);
 
   if (!response.ok) {
     throw new Error("Failed to load feed");
@@ -59,11 +59,10 @@ export async function getFeed( cursor?: string ): Promise<FeedResponse> {
 };
 
 export async function markPostViewed(postId: string) {
-  const response = await fetch(
+  const response = await apiFetch(
     `${process.env.NEXT_PUBLIC_API_URL}/posts/${postId}/view`,
     {
       method: "POST",
-      credentials: "include",
     }
   );
 

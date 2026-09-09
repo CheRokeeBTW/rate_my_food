@@ -6,7 +6,7 @@ import signInImage from '../../../public/sign-in-3303.svg';
 import policyImage from '../../../public/terms-and-conditions-icon.svg';
 import Image from 'next/image';
 import UploadModal from '../upload/UploadModal';
-import { useTokenStore } from '@/stores/auth.sotres';
+import { useTokenStore } from '@/stores/auth.stores';
 
 type NavBarProps = {
     onRequireAuth: () => void;

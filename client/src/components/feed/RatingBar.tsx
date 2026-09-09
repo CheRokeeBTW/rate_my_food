@@ -2,7 +2,7 @@
 
 import { Star } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useTokenStore } from "@/stores/auth.sotres";
+import { useTokenStore } from "@/stores/auth.stores";
 
 type RatingProps = {
     postId: string;

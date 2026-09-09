@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Inter } from "next/font/google";
 import { loginUser } from "@/app/services/auth.service";
 import { X } from "lucide-react";
-import { useTokenStore } from "@/stores/auth.sotres";
+import { useTokenStore } from "@/stores/auth.stores";
 
 const inter = Inter({
   subsets: ["latin"],
