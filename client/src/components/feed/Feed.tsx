@@ -9,6 +9,7 @@ import { getFeed, FeedPost, markPostViewed } from "@/app/services/posts.service"
 import { useState, useEffect } from "react";
 import { createRating, CreateRating } from "@/app/services/rating.service";
 import { useTokenStore } from "@/stores/auth.stores";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type FeedProps = {
     onRequireAuth: () => void;
@@ -112,6 +113,14 @@ export function Feed({ onRequireAuth } : FeedProps){
         }
     };
 
+    const handlePrevious = () => {
+        if (currentIndex === 0) {
+            return;
+        }
+
+        setCurrentIndex(prev => prev - 1);
+    };
+
     const handleRate = async (value: number) => {
         if(!currentPost){
             return
@@ -139,18 +148,21 @@ export function Feed({ onRequireAuth } : FeedProps){
     }
 
     return(
-        <div>
-            <FoodCard 
-                post={currentPost}
-                onSwipeLeft={handleNext} 
-            />
-            <Rating postId = {currentPost.id} onRate={handleRate} onRequireAuth={onRequireAuth}/>
-            <button
-                onClick={() => handleNext()}
-                className="flex justify-end w-full mt-7"
-            >
-                Skip
-            </button>
+        <div className="flex items-center justify-center gap-4 px-4">
+            <div className="w-full max-w-[650px]">
+                <FoodCard
+                    post={currentPost}
+                    onSwipeLeft={handleNext}
+                    handleNext={handleNext}
+                    handlePrevious={handlePrevious}
+                    canGoPrevious={currentIndex > 0}
+                />
+                <Rating
+                    postId={currentPost.id}
+                    onRate={handleRate}
+                    onRequireAuth={onRequireAuth}
+                />
         </div>
+    </div>
     )
 }

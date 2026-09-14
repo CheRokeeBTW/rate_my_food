@@ -5,6 +5,22 @@ type CreatePostData = {
   imageUrl: string;
 };
 
+export type FeedPost = {
+  id: string;
+  title: string;
+  imageUrl: string;
+  createdAt: string;
+  author: {
+    id: string;
+    username: string;
+  };
+};
+
+export type FeedResponse = {
+  items: FeedPost[];
+  nextCursor: string | null;
+};
+
 export async function createPost({ title, imageUrl } : CreatePostData) {
 
     const response =  await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
@@ -26,21 +42,6 @@ export async function createPost({ title, imageUrl } : CreatePostData) {
     return data
 };
 
-export type FeedPost = {
-  id: string;
-  title: string;
-  imageUrl: string;
-  createdAt: string;
-  author: {
-    id: string;
-    username: string;
-  };
-};
-
-export type FeedResponse = {
-  items: FeedPost[];
-  nextCursor: string | null;
-};
 
 export async function getFeed( cursor?: string ): Promise<FeedResponse> {
   let url = `${process.env.NEXT_PUBLIC_API_URL}/posts/feed`;
