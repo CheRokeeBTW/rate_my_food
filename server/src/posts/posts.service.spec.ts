@@ -221,7 +221,7 @@ describe('PostsService', () => {
       });
     });
 
-    it('should return only 5 posts and nextCursor when there are more posts', async () => {
+    it('should return only 10 posts and nextCursor when there are more posts', async () => {
       const posts = Array.from({ length: 6 }, (_, index) => ({
         id: `post-${index + 1}`,
         title: `Post ${index + 1}`,
@@ -240,9 +240,9 @@ describe('PostsService', () => {
         { userId: 'user-1' },
       );
 
-      expect(result.items).toHaveLength(5);
-      expect(result.items).toEqual(posts.slice(0, 5));
-      expect(result.nextCursor).toBe('post-5');
+      expect(result.items).toHaveLength(10);
+      expect(result.items).toEqual(posts.slice(0, 10));
+      expect(result.nextCursor).toBe('post-10');
     });
 
     it('should use cursor pagination', async () => {
