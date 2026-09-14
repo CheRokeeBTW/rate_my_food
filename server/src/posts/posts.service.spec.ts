@@ -149,7 +149,7 @@ describe('PostsService', () => {
             },
           },
         },
-        take: 6,
+        take: 11,
         orderBy: {
           createdAt: 'desc',
         },
@@ -202,7 +202,7 @@ describe('PostsService', () => {
             },
           },
         },
-        take: 6,
+        take: 11,
         orderBy: {
           createdAt: 'desc',
         },
@@ -222,7 +222,7 @@ describe('PostsService', () => {
     });
 
     it('should return only 10 posts and nextCursor when there are more posts', async () => {
-      const posts = Array.from({ length: 6 }, (_, index) => ({
+      const posts = Array.from({ length: 11 }, (_, index) => ({
         id: `post-${index + 1}`,
         title: `Post ${index + 1}`,
         imageUrl: `image-${index + 1}.jpg`,
@@ -274,7 +274,7 @@ describe('PostsService', () => {
             },
           },
         },
-        take: 6,
+        take: 11,
         cursor: {
           id: 'post-1',
         },
