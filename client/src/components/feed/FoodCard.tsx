@@ -106,7 +106,7 @@ export default function FoodCard({
                                 <ChevronLeft size={24} />
                             </button>
                         </div>
-                    <div className="relative aspect-[4/5] w-full h-150 overflow-hidden overflow-hidden rounded-[24px] border border-zinc-800">
+                    <div className="relative aspect-[4/5] w-full h-150 overflow-hidden rounded-[24px] border border-zinc-800">
                         <Image
                             src={post.imageUrl}
                             alt={post.title}
@@ -116,12 +116,12 @@ export default function FoodCard({
                             className="object-cover"
                         />
                         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                        <div className="absolute bottom-0 left-0 right-0 p-5">
-                            <p className="mt-1 text-sm text-zinc-300">
-                                @{post.author.username}
-                            </p>
+                            <div className="absolute bottom-0 left-0 right-0 p-5">
+                                <p className="mt-1 text-sm text-zinc-300">
+                                    @{post.author.username}
+                                </p>
+                            </div>
                         </div>
-                    </div>
                     <div className="flex items-center">
                         <button
                             type="button"

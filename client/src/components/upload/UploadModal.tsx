@@ -237,7 +237,7 @@ export default function UploadModal({ onClose }: UploadModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/70 p-4">
       <div className="w-full max-w-2xl rounded-2xl bg-zinc-900 p-6 shadow-2xl">
 
         <div className="mb-5 flex items-center">
