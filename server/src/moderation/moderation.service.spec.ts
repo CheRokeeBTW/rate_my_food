@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ModerationService } from './moderation.service';
 import { PrismaService } from 'prisma/prisma.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 describe('ModerationService', () => {
   let service: ModerationService;
@@ -17,7 +18,11 @@ describe('ModerationService', () => {
         ModerationService,
         {
           provide: PrismaService,
-          useValue: prismaServiceMock,
+          useValue: {},
+        },
+        {
+          provide: CloudinaryService,
+          useValue: {},
         },
       ],
     }).compile();
