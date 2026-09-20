@@ -1,6 +1,6 @@
 import { IsString, Min, IsUrl, Max, MaxLength } from "class-validator";
 
-export class CreatePostDto {
+export class CreatePostSubmissionDto {
 
     @IsString()
     @MaxLength(70)

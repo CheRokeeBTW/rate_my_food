@@ -31,6 +31,7 @@ model User {
   createdAt DateTime @default(now())
 
   posts         Post[]
+  submissions   PostSubmission[]
   ratings       Rating[]
   refreshTokens RefreshToken[]
   postViews     PostView[]     @relation("UserPostViews")
@@ -80,4 +81,22 @@ model PostView {
   @@unique([postId, visitorId])
   @@index([userId])
   @@index([visitorId])
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model PostSubmission {
+  id        String   @id @default(uuid())
+  title     String
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  status SubmissionStatus @default(PENDING)
+
+  authorId String
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }
