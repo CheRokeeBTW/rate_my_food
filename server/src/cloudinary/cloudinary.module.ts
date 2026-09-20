@@ -13,5 +13,8 @@ import { AuthModule } from '../auth/auth.module';
   providers: [
     CloudinaryService,
   ],
+  exports: [
+    CloudinaryService,
+  ]
 })
 export class CloudinaryModule {}

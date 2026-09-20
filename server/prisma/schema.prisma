@@ -11,6 +11,18 @@ datasource db {
   provider = "postgresql"
 }
 
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  GOD
+}
+
 model RefreshToken {
   id        String @id @default(uuid())
   tokenHash String @unique
@@ -29,6 +41,8 @@ model User {
   username  String   @unique
   password  String
   createdAt DateTime @default(now())
+
+  role UserRole @default(USER)
 
   posts         Post[]
   submissions   PostSubmission[]
@@ -83,16 +97,12 @@ model PostView {
   @@index([visitorId])
 }
 
-enum SubmissionStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
 
 model PostSubmission {
   id        String   @id @default(uuid())
   title     String
   imageUrl  String
+  publicId  String
   createdAt DateTime @default(now())
 
   status SubmissionStatus @default(PENDING)

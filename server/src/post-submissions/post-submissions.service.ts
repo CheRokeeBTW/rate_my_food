@@ -14,6 +14,7 @@ export class PostSubmissionsService {
             data: {
                 title: dto.title,
                 imageUrl: dto.imageUrl,
+                publicId: dto.publicId,
                 authorId: userId,
             },
         });

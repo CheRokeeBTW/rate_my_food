@@ -8,4 +8,7 @@ export class CreatePostSubmissionDto {
 
     @IsUrl()
     imageUrl!: string;
+
+    @IsString()
+    publicId!: string;
 }

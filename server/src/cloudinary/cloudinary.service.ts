@@ -28,4 +28,8 @@ export class CloudinaryService {
       folder,
     };
   }
+
+  async deleteImage(publicId: string) {
+    return cloudinary.uploader.destroy(publicId);
+  }
 }
