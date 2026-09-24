@@ -5,6 +5,10 @@ type CreatePostData = {
   imageUrl: string;
 };
 
+type createPostSubmission = CreatePostData & {
+  publicId: string;
+}
+
 export type FeedPost = {
   id: string;
   title: string;
@@ -34,9 +38,7 @@ export async function createPost({ title, imageUrl } : CreatePostData) {
     const data = await response.json();
 
     if(!response.ok){
-        throw new Error(
-            data.message || "Failed to create post",
-        );
+        throw new Error(data.message || "Failed to create post")
     };
 
     return data
@@ -77,3 +79,25 @@ export async function markPostViewed(postId: string) {
 
   return response.json();
 }
+
+export async function createPostSubmission({ title, imageUrl, publicId } : createPostSubmission){
+  const response = await apiFetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/post-submissions`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title, imageUrl, publicId })
+    }
+  );
+
+  const data = await response.json();
+
+  if(!response.ok){
+    throw new Error(data.message || 'Failed to submit this post for moderation')
+  }
+
+  return data;
+}
+

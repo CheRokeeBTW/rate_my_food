@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Cropper, { Area, Point } from "react-easy-crop";
 import { uploadToCloudinary, CloudinaryUploadResponse } from "@/app/services/cloudinary.service";
 import { getCroppedImage } from "./cropImage";
-import { createPost } from "@/app/services/posts.service";
+import { createPost, createPostSubmission } from "@/app/services/posts.service";
 
 type UploadModalProps = {
   onClose: () => void;
@@ -215,12 +215,13 @@ export default function UploadModal({ onClose }: UploadModalProps) {
     setIsCreatingPost(true);
 
     try {
-      const post = await createPost({
+      const submission = await createPostSubmission({
         title: title.trim(),
         imageUrl: uploadedImage.secure_url,
+        publicId: uploadedImage.public_id,
       });
 
-      console.log("Post created:", post);
+      console.log("Post submitted for moderation:", submission);
 
       onClose();
     } catch (err) {
@@ -229,7 +230,7 @@ export default function UploadModal({ onClose }: UploadModalProps) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Failed to create post");
+        setError("Failed to submit this post for moderation");
       }
     } finally {
       setIsCreatingPost(false);
