@@ -61,7 +61,7 @@ export default function Profile () {
                     console.error("Failed to update username", err);
                 }
             })
-    }
+    };
     
     console.log(posts, "ONLY POSTS");
 

@@ -5,3 +5,12 @@ export type Post = {
     imageUrl: string;
     title: string;
 }
+
+export type SubmittedPost = {
+    id: string;
+    title: string;
+    imageUrl: string;
+    publicId: string;
+    createdAt: string;
+    status: string;
+}
