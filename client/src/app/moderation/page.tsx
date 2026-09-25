@@ -37,7 +37,9 @@ export default function Moderation() {
 
     const handleRejectSubmission = async (submissionId: string): Promise<void> => {
         try{
-           await rejectPostSubmission(submissionId)
+           await rejectPostSubmission(submissionId);
+
+           setSubmissions((prevSubmission) => prevSubmission.filter((submission) => submission.id !== submissionId)) 
         } catch (err){
             console.error("Failed to reject this post")
         }
@@ -52,7 +54,7 @@ export default function Moderation() {
 return (
     <div className="min-h-screen px-6 py-10 text-white">
         <div className="mx-auto max-w-6xl">
-            <div className="mb-8">
+            <div className="mb-8 text-center">
                 <h1 className="text-3xl font-bold tracking-tight">
                     Moderation
                 </h1>
