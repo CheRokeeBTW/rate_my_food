@@ -106,7 +106,7 @@ export default function FoodCard({
                                 <ChevronLeft size={24} />
                             </button>
                         </div>
-                    <div className="relative aspect-[4/5] w-full h-150 overflow-hidden rounded-[24px] border border-zinc-800">
+                    <div className="relative w-150 h-150 overflow-hidden rounded-[24px] border border-zinc-800">
                         <Image
                             src={post.imageUrl}
                             alt={post.title}
