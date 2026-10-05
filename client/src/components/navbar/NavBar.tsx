@@ -9,6 +9,8 @@ import Image from 'next/image';
 import UploadModal from '../upload/UploadModal';
 import { useTokenStore } from '@/stores/auth.stores';
 import { useRouter } from 'next/navigation';
+import logoutImg from '../../../public/open-door-icon.svg';
+import { logoutUser } from '@/app/services/auth.service';
 
 type NavBarProps = {
     onRequireAuth: () => void;
@@ -19,6 +21,7 @@ export default function NavBar({ onRequireAuth } : NavBarProps){
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const router = useRouter();
     const accessToken = useTokenStore(state => state.accessToken);
+    const setAccessToken = useTokenStore(state => state.setAccessToken);
 
     const checkLogin = () => {
         if(!accessToken){
@@ -28,6 +31,16 @@ export default function NavBar({ onRequireAuth } : NavBarProps){
 
         setUploadOpen(true);
     };
+
+    const handleLogout = async () => {
+        try{
+            await logoutUser();
+            setAccessToken(null);
+            setMenuOpen(false);
+        } catch(err){
+             console.error("Failed to logout user")
+        } 
+    }
 
     return(
         <div className="flex z-50 sticky w-fit justify-start h-10 items-center gap-7 py-8 px-5 hover:bg-zinc-900/80 transition rounded-br-xl">
@@ -58,13 +71,22 @@ export default function NavBar({ onRequireAuth } : NavBarProps){
                             <p className='text-xs' >Log in</p>
                         </div>
                     ) : (
+                        <>
                         <div 
                             onClick={() => router.push('/profile')}
                             className='flex flex-col items-center gap-1 transition-transform duration-200 hover:scale-110 hover:cursor-pointer'
                         >
                             <Image src = {profileImg} alt="signInImage" width={24} height={24}  className='scale-125'/>
-                            <p className='text-xs' >Profile</p>
+                            <p className='text-xs'>Profile</p>
                         </div>
+                        <div 
+                            onClick={handleLogout}
+                            className='flex flex-col items-center justify-center gap-1 transition-transform duration-200 hover:scale-110 hover:cursor-pointer'
+                        >
+                            <Image src = {logoutImg} alt="signInImage" width={14} height={14}  className='scale-125'/>
+                            <p className='text-xs'>Logout</p>
+                        </div>
+                        </>
                     )}
                     <div className='flex flex-col items-center justify-center gap-1 transition-transform duration-200 hover:scale-110 hover:cursor-pointer'>
                         <Image src = {policyImage} alt="policyImage" width={18} height={18}/>
