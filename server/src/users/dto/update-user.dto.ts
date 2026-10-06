@@ -4,5 +4,5 @@ export class UpdateUserDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
-  newUsername!: string;
+  readonly newUsername!: string;
 }

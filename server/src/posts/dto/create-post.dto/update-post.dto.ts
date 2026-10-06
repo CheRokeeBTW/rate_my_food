@@ -4,9 +4,9 @@ export class UpdatePostDto {
   @IsOptional()
   @IsString()
   @MaxLength(70)
-  title?: string;
+  readonly title?: string;
 
   @IsOptional()
   @IsUrl()
-  imageUrl?: string;
+  readonly imageUrl?: string;
 }

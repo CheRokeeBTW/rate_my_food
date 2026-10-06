@@ -4,8 +4,8 @@ export class CreatePostDto {
 
     @IsString()
     @MaxLength(70)
-    title!: string;
+    readonly title!: string;
 
     @IsUrl()
-    imageUrl!: string;
+    readonly imageUrl!: string;
 }

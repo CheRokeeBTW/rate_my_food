@@ -4,8 +4,8 @@ export class CreateRatingDto {
   @IsInt()
   @Min(1)
   @Max(10)
-  value!: number;
+  readonly value!: number;
 
   @IsUUID()
-  postId!: string;
+  readonly postId!: string;
 }
