@@ -45,10 +45,6 @@ const CROP_RATIOS: CropRatio[] = [
         value: NaN,
     },
     {
-        label: "1:1",
-        value: 1,
-    },
-    {
         label: "4:3",
         value: 4 / 3,
     },
@@ -79,13 +75,6 @@ export default function UploadModal({
     const [cropRatio, setCropRatio] =
         useState<number>(4 / 3);
 
-    /*
-     * Zoom represents the user's zoom slider value.
-     *
-     * 0 = normal/default view
-     * 1 = slightly zoomed
-     * 2 = more zoomed
-     */
     const [zoom, setZoom] = useState(0);
 
     const [isUploading, setIsUploading] =
@@ -108,10 +97,6 @@ export default function UploadModal({
     const [submitted, setSubmitted] =
         useState(false);
 
-    /*
-     * Clean up object URLs when component
-     * is destroyed or preview changes.
-     */
     useEffect(() => {
         return () => {
             if (preview) {
@@ -119,12 +104,6 @@ export default function UploadModal({
             }
         };
     }, [preview]);
-
-    /*
-     * -------------------------
-     * FILE VALIDATION
-     * -------------------------
-     */
 
     const validateFile = (selectedFile: File) => {
         if (!ALLOWED_TYPES.includes(selectedFile.type)) {
@@ -137,12 +116,6 @@ export default function UploadModal({
 
         return null;
     };
-
-    /*
-     * -------------------------
-     * SELECT IMAGE
-     * -------------------------
-     */
 
     const selectFile = (selectedFile: File) => {
         setError(null);
@@ -167,7 +140,6 @@ export default function UploadModal({
 
         setCropRatio(4 / 3);
 
-        // Reset zoom whenever a new image is selected
         setZoom(0);
 
         setUploadedImage(null);
@@ -187,15 +159,8 @@ export default function UploadModal({
 
         selectFile(selectedFile);
 
-        // Allows selecting the same file again
         event.target.value = "";
     };
-
-    /*
-     * -------------------------
-     * DRAG & DROP
-     * -------------------------
-     */
 
     const handleDragOver = (
         event: React.DragEvent<HTMLDivElement>,
@@ -236,12 +201,6 @@ export default function UploadModal({
         selectFile(droppedFile);
     };
 
-    /*
-     * -------------------------
-     * CROP RATIO
-     * -------------------------
-     */
-
     const handleCropRatioChange = (
         ratio: number,
     ) => {
@@ -254,20 +213,8 @@ export default function UploadModal({
             return;
         }
 
-        /*
-         * NaN = free aspect ratio.
-         *
-         * Otherwise Cropper.js locks
-         * the crop box to the selected ratio.
-         */
         cropper.setAspectRatio(ratio);
     };
-
-    /*
-     * -------------------------
-     * ROTATION
-     * -------------------------
-     */
 
     const rotateLeft = () => {
         const cropper =
@@ -291,12 +238,6 @@ export default function UploadModal({
         cropper.rotate(90);
     };
 
-    /*
-     * -------------------------
-     * ZOOM
-     * -------------------------
-     */
-
     const handleZoom = (
         event: React.ChangeEvent<HTMLInputElement>,
     ) => {
@@ -310,24 +251,6 @@ export default function UploadModal({
             return;
         }
 
-        /*
-         * Instead of zoomTo(), we use zoom().
-         *
-         * zoom() changes the current zoom level
-         * by a relative amount.
-         *
-         * Example:
-         *
-         * old zoom = 0.4
-         * slider changes from 0.2 -> 0.3
-         *
-         * difference = 0.1
-         *
-         * cropper.zoom(0.1)
-         *
-         * This prevents the image from suddenly
-         * jumping to its original 1:1 scale.
-         */
         const difference =
             newZoom - zoom;
 
@@ -335,12 +258,6 @@ export default function UploadModal({
 
         setZoom(newZoom);
     };
-
-    /*
-     * -------------------------
-     * RESET
-     * -------------------------
-     */
 
     const resetEditor = () => {
         const cropper =
@@ -356,15 +273,8 @@ export default function UploadModal({
 
         cropper.setAspectRatio(4 / 3);
 
-        // Reset slider too
         setZoom(0);
     };
-
-    /*
-     * -------------------------
-     * REMOVE IMAGE
-     * -------------------------
-     */
 
     const removeImage = () => {
         if (isUploading || isCreatingPost) {
@@ -391,12 +301,6 @@ export default function UploadModal({
         setSubmitted(false);
     };
 
-    /*
-     * -------------------------
-     * UPLOAD TO CLOUDINARY
-     * -------------------------
-     */
-
     const handleUpload = async () => {
         if (!file || !preview) {
             return;
@@ -417,10 +321,6 @@ export default function UploadModal({
         setUploadProgress(0);
 
         try {
-            /*
-             * Get the exact area selected
-             * by the user.
-             */
             const croppedBlob =
                 await getCroppedImage(cropper);
 
@@ -461,12 +361,6 @@ export default function UploadModal({
             setIsUploading(false);
         }
     };
-
-    /*
-     * -------------------------
-     * SUBMIT FOR MODERATION
-     * -------------------------
-     */
 
     const handleCreatePost = async () => {
         if (!uploadedImage) {
@@ -517,18 +411,9 @@ export default function UploadModal({
         isUploading ||
         isCreatingPost;
 
-    /*
-     * -------------------------
-     * RENDER
-     * -------------------------
-     */
-
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm">
             <div className="my-auto w-full max-w-2xl rounded-2xl bg-zinc-900 p-6 shadow-2xl">
-
-                {/* HEADER */}
-
                 <div className="mb-5 flex items-center">
                     <div>
                         <h2 className="text-xl font-semibold text-white">
@@ -553,8 +438,6 @@ export default function UploadModal({
                         <X size={22} />
                     </button>
                 </div>
-
-                {/* SUCCESS */}
 
                 {submitted && (
                     <div className="py-10 text-center">
@@ -584,8 +467,6 @@ export default function UploadModal({
                         </button>
                     </div>
                 )}
-
-                {/* MAIN CONTENT */}
 
                 {!submitted && (
                     <>
@@ -649,8 +530,6 @@ export default function UploadModal({
                             </>
                         )}
 
-                        {/* CROP EDITOR */}
-
                         {preview && !uploadedImage && (
                             <>
                                 <div className="relative h-[420px] w-full overflow-hidden rounded-xl bg-black">
@@ -679,8 +558,6 @@ export default function UploadModal({
                                         minCropBoxHeight={50}
                                     />
                                 </div>
-
-                                {/* RATIO SELECTOR */}
 
                                 <div className="mt-5">
                                     <p className="mb-3 text-sm font-medium text-zinc-300">
@@ -718,6 +595,7 @@ export default function UploadModal({
                                                             py-2
                                                             text-sm
                                                             transition
+                                                            hover:cursor-pointer
                                                             ${
                                                                 isActive
                                                                     ? "bg-green-500 font-medium text-black"
@@ -733,20 +611,13 @@ export default function UploadModal({
                                     </div>
                                 </div>
 
-                                {/* INSTRUCTIONS */}
-
                                 <div className="mt-4 rounded-xl bg-zinc-800/70 p-3">
                                     <p className="text-xs text-zinc-400">
-                                        <span className="font-medium text-zinc-300">
-                                            Free mode:
-                                        </span>{" "}
-                                        drag the corners or edges
+                                        Drag the corners or edges
                                         of the crop box to choose
                                         exactly the area you want.
                                     </p>
                                 </div>
-
-                                {/* ZOOM */}
 
                                 <div className="mt-5">
                                     <div className="mb-2 flex justify-between text-sm">
@@ -771,8 +642,6 @@ export default function UploadModal({
                                         className="w-full accent-green-500"
                                     />
                                 </div>
-
-                                {/* CONTROLS */}
 
                                 <div className="mt-4 flex items-center gap-2">
                                     <button
@@ -811,8 +680,6 @@ export default function UploadModal({
                                     </button>
                                 </div>
 
-                                {/* REPLACE */}
-
                                 <div className="mt-4">
                                     <button
                                         type="button"
@@ -834,8 +701,6 @@ export default function UploadModal({
                                 </div>
                             </>
                         )}
-
-                        {/* UPLOAD PROGRESS */}
 
                         {isUploading && (
                             <div className="mt-5">
@@ -860,8 +725,6 @@ export default function UploadModal({
                             </div>
                         )}
 
-                        {/* UPLOADED IMAGE */}
-
                         {uploadedImage && (
                             <div className="mt-5 space-y-4">
                                 <div className="overflow-hidden rounded-xl bg-black">
@@ -884,8 +747,6 @@ export default function UploadModal({
                                         for moderation.
                                     </p>
                                 </div>
-
-                                {/* TITLE */}
 
                                 <div>
                                     <label
@@ -943,8 +804,6 @@ export default function UploadModal({
                             </p>
                         )}
 
-                        {/* FOOTER */}
-
                         <div className="mt-6 flex justify-end gap-3">
                             <button
                                 type="button"
@@ -954,8 +813,6 @@ export default function UploadModal({
                             >
                                 Cancel
                             </button>
-
-                            {/* UPLOAD */}
 
                             {!uploadedImage && (
                                 <button
