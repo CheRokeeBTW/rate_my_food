@@ -55,6 +55,7 @@ model Post {
   id        String   @id @default(uuid())
   title     String
   imageUrl  String
+  tags      String[]
   createdAt DateTime @default(now())
 
   authorId String
@@ -97,11 +98,11 @@ model PostView {
   @@index([visitorId])
 }
 
-
 model PostSubmission {
   id        String   @id @default(uuid())
   title     String
   imageUrl  String
+  tags      String[]
   publicId  String
   createdAt DateTime @default(now())
 

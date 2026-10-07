@@ -80,6 +80,7 @@ async getFeed(
     select: {
       id: true,
       title: true,
+      tags: true,
       imageUrl: true,
       createdAt: true,
 
@@ -162,6 +163,7 @@ async getFeed(
     return this.prisma.post.create({
       data: {
         title: dto.title,
+        tags: dto.tags,
         imageUrl: dto.imageUrl,
         authorId: userId,
       },
