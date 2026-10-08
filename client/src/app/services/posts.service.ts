@@ -2,6 +2,7 @@ import { apiFetch } from "./token.service";
 
 type CreatePostData = {
   title: string;
+  tags: string[];
   imageUrl: string;
 };
 
@@ -25,14 +26,14 @@ export type FeedResponse = {
   nextCursor: string | null;
 };
 
-export async function createPost({ title, imageUrl } : CreatePostData) {
+export async function createPost({ title, tags, imageUrl } : CreatePostData) {
 
     const response =  await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, imageUrl }),
+        body: JSON.stringify({ title, tags, imageUrl }),
     });
 
     const data = await response.json();
@@ -80,7 +81,7 @@ export async function markPostViewed(postId: string) {
   return response.json();
 }
 
-export async function createPostSubmission({ title, imageUrl, publicId } : createPostSubmission){
+export async function createPostSubmission({ title, tags, imageUrl, publicId } : createPostSubmission){
   const response = await apiFetch(
     `${process.env.NEXT_PUBLIC_API_URL}/post-submissions`,
     {
@@ -88,7 +89,7 @@ export async function createPostSubmission({ title, imageUrl, publicId } : creat
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, imageUrl, publicId })
+      body: JSON.stringify({ title, tags, imageUrl, publicId })
     }
   );
 

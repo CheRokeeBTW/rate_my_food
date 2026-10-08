@@ -89,7 +89,9 @@ export default function UploadModal({
     const [uploadedImage, setUploadedImage] =
         useState<CloudinaryUploadResponse | null>(null);
 
-    const [title, setTitle] = useState("");
+    const [title, setTitle] = useState<string>("");
+
+    const [tags, setTags] = useState<string[]>([""]);
 
     const [isCreatingPost, setIsCreatingPost] =
         useState(false);
@@ -145,6 +147,7 @@ export default function UploadModal({
         setUploadedImage(null);
         setSubmitted(false);
         setTitle("");
+        setTags([""]);
     };
 
     const handleFileChange = (
@@ -291,6 +294,7 @@ export default function UploadModal({
         setUploadedImage(null);
 
         setTitle("");
+        setTags([""]);
 
         setError(null);
 
@@ -382,6 +386,9 @@ export default function UploadModal({
                     title: title.trim(),
                     imageUrl:
                         uploadedImage.secure_url,
+                    tags: tags
+                        .map((tag) => tag.trim())
+                        .filter(Boolean),
                     publicId:
                         uploadedImage.public_id,
                 });
@@ -405,6 +412,34 @@ export default function UploadModal({
         } finally {
             setIsCreatingPost(false);
         }
+    };
+
+    const handleTagChange = (
+        index: number,
+        value: string,
+    ) => {
+        setTags((currentTags) =>
+            currentTags.map((tag, i) =>
+                i === index ? value : tag,
+            ),
+        );
+    };
+
+    const addTag = () => {
+        if (tags.length >= 10) {
+            return;
+        }
+
+        setTags((currentTags) => [
+            ...currentTags,
+            "",
+        ]);
+    };
+
+    const removeTag = (index: number) => {
+        setTags((currentTags) =>
+            currentTags.filter((_, i) => i !== index),
+        );
     };
 
     const isBusy =
@@ -470,7 +505,6 @@ export default function UploadModal({
 
                 {!submitted && (
                     <>
-                        {/* SELECT FILE */}
 
                         {!preview && (
                             <>
@@ -793,10 +827,72 @@ export default function UploadModal({
                                         </span>
                                     </div>
                                 </div>
+                                <div>
+                                <div className="mb-2 flex items-center justify-between">
+                                    <label className="text-sm font-medium text-zinc-300">
+                                        Tags
+                                    </label>
+
+                                    <span className="text-xs text-zinc-500">
+                                        {tags.filter((tag) => tag.trim()).length}/10
+                                    </span>
+                                </div>
+
+                                <div className="space-y-2">
+                                    {tags.map((tag, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex items-center gap-2"
+                                        >
+                                            <input
+                                                type="text"
+                                                value={tag}
+                                                onChange={(event) =>
+                                                    handleTagChange(
+                                                        index,
+                                                        event.target.value,
+                                                    )
+                                                }
+                                                placeholder={
+                                                    index === 0
+                                                        ? "e.g. burger"
+                                                        : "Add another tag"
+                                                }
+                                                maxLength={15}
+                                                className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white outline-none transition placeholder:text-zinc-500 focus:border-green-500"
+                                            />
+
+                                            {tags.length > 1 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        removeTag(index)
+                                                    }
+                                                    className="rounded-lg p-2 text-zinc-500 transition hover:bg-red-500/10 hover:text-red-400 hover:cursor-pointer"
+                                                    title="Remove tag"
+                                                >
+                                                    <X size={18} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {tags.length < 10 && (
+                                    <button
+                                        type="button"
+                                        onClick={addTag}
+                                        className="mt-2 text-sm text-green-400 transition hover:text-green-300 hover:cursor-pointer"
+                                    >
+                                        + Add new tag
+                                    </button>
+                                )}
+                                <p className="mt-1 text-xs text-zinc-500">
+                                    Optional · Maximum 10 tags · 15 characters max
+                                </p>
+                            </div>
                             </div>
                         )}
-
-                        {/* ERROR */}
 
                         {error && (
                             <p className="mt-4 text-sm text-red-400">
@@ -809,7 +905,7 @@ export default function UploadModal({
                                 type="button"
                                 onClick={onClose}
                                 disabled={isBusy}
-                                className="rounded-full px-5 py-2 text-sm text-zinc-300 transition hover:bg-zinc-800 hover:text-white disabled:opacity-40"
+                                className="rounded-full px-5 py-2 text-sm text-zinc-300 transition hover:bg-zinc-800 hover:text-white disabled:opacity-40 hover:cursor-pointer"
                             >
                                 Cancel
                             </button>
@@ -832,8 +928,6 @@ export default function UploadModal({
                                 </button>
                             )}
 
-                            {/* SUBMIT */}
-
                             {uploadedImage && (
                                 <button
                                     type="button"
@@ -844,7 +938,7 @@ export default function UploadModal({
                                     onClick={
                                         handleCreatePost
                                     }
-                                    className="rounded-full bg-green-500 px-6 py-2 font-medium text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-40"
+                                    className="rounded-full bg-green-500 px-6 py-2 font-medium text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-40 hover:cursor-pointer"
                                 >
                                     {isCreatingPost
                                         ? "Submitting..."
