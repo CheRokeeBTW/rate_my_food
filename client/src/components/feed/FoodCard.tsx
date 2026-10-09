@@ -147,6 +147,26 @@ export default function FoodCard({
                         </button>
                     </div>
                     </div>
+                    {post.tags.length > 0 && (
+                        <div className="mb-4 mt-2 flex flex-wrap items-center justify-center gap-2 px-2">
+                            {post.tags.map((tag) => (
+                                <span
+                                    key={tag}
+                                    className="
+                                        rounded-full
+                                        border border-green-500/20
+                                        bg-green-500/10
+                                        px-3 py-1
+                                        text-xs font-medium
+                                        tracking-wide
+                                        text-green-300
+                                    "
+                                >
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+                )}
                 </article>
         </motion.div>
     );

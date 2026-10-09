@@ -23,7 +23,6 @@ export function Feed({ onRequireAuth } : FeedProps){
     const [currentIndex, setCurrentIndex] = useState(0);
     const [nextCursor, setNextCursor] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);
-    // const router = useRouter();
     const currentPost = posts[currentIndex];
     const token = useTokenStore(state => state.accessToken);
     const isInitialized = useTokenStore(state => state.isInitialized);
@@ -149,14 +148,16 @@ export function Feed({ onRequireAuth } : FeedProps){
 
     return(
         <div className="flex items-center justify-center gap-4 px-4">
-            <div className="w-full max-w-[650px]">
-                <FoodCard
-                    post={currentPost}
-                    onSwipeLeft={handleNext}
-                    handleNext={handleNext}
-                    handlePrevious={handlePrevious}
-                    canGoPrevious={currentIndex > 0}
-                />
+            <div className="items-center justify-center px-4 py-6">
+               
+                    <FoodCard
+                        post={currentPost}
+                        onSwipeLeft={handleNext}
+                        handleNext={handleNext}
+                        handlePrevious={handlePrevious}
+                        canGoPrevious={currentIndex > 0}
+                    />
+   
                 <Rating
                     postId={currentPost.id}
                     onRate={handleRate}

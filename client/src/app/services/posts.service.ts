@@ -13,6 +13,7 @@ type createPostSubmission = CreatePostData & {
 export type FeedPost = {
   id: string;
   title: string;
+  tags: string[];
   imageUrl: string;
   createdAt: string;
   author: {

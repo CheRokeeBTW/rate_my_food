@@ -89,12 +89,26 @@ return (
                                 />
                             </div>
                             <div className="p-5">
-                                <h2 className="truncate text-lg font-semibold text-white">
-                                    {submission.title}
-                                </h2>
-                                <p className="mt-1 text-xs text-gray-500">
-                                    Submitted for review
-                                </p>
+                            <h2 className="truncate text-lg font-semibold text-white">
+                                {submission.title}
+                            </h2>
+
+                            {submission.tags.length > 0 && (
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                    {submission.tags.map((tag) => (
+                                        <span
+                                            key={tag}
+                                            className="rounded-full border border-gray-700 bg-gray-800 px-3 py-1 text-xs font-medium text-gray-300"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+
+                            <p className="mt-3 text-xs text-gray-500">
+                                Submitted for review
+                            </p>
                                 <div className="mt-5 grid grid-cols-2 gap-3">
                                     <button
                                         onClick={() =>
