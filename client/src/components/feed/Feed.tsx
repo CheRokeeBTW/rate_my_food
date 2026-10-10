@@ -146,24 +146,22 @@ export function Feed({ onRequireAuth } : FeedProps){
         );
     }
 
-    return(
-        <div className="flex items-center justify-center gap-4 px-4">
-            <div className="items-center justify-center px-4 py-6">
-               
-                    <FoodCard
-                        post={currentPost}
-                        onSwipeLeft={handleNext}
-                        handleNext={handleNext}
-                        handlePrevious={handlePrevious}
-                        canGoPrevious={currentIndex > 0}
-                    />
-   
-                <Rating
-                    postId={currentPost.id}
-                    onRate={handleRate}
-                    onRequireAuth={onRequireAuth}
-                />
-        </div>
-    </div>
-    )
+return (
+  <div className="flex min-h-[calc(100svh-80px)] w-full items-center justify-center px-4 py-6">
+    <FoodCard
+      post={currentPost}
+      onSwipeLeft={handleNext}
+      handleNext={handleNext}
+      handlePrevious={handlePrevious}
+      canGoPrevious={currentIndex > 0}
+      ratingSlot={
+        <Rating
+          postId={currentPost.id}
+          onRate={handleRate}
+          onRequireAuth={onRequireAuth}
+        />
+      }
+    />
+  </div>
+);
 }

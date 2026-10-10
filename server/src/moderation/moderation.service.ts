@@ -47,7 +47,6 @@ export class ModerationService {
       const post = await tx.post.create({
         data: {
           title: submission.title,
-          tags: submission.tags,
           imageUrl: submission.imageUrl,
           authorId: submission.authorId,
         },

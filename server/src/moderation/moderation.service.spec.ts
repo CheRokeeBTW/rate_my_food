@@ -29,8 +29,6 @@ describe('ModerationService', () => {
   beforeEach(async () => {
     jest.resetAllMocks();
 
-    // Simulate Prisma's interactive transaction by passing
-    // the mocked transaction client to the callback.
     prismaServiceMock.$transaction.mockImplementation(
       (callback: (tx: typeof prismaServiceMock) => unknown) =>
         callback(prismaServiceMock),
