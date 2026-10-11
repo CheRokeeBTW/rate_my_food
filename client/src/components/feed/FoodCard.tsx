@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { useEffect, type ReactNode } from "react";
-import { FeedPost } from "@/app/services/posts.service";
+import { Post } from "@/app/helper/types";
 import { motion, useMotionValue, useTransform, animate } from "motion/react";
 import { ChevronLeft, ChevronRight, Bookmark, Share2 } from "lucide-react";
+import AverageRating from "./AverageRating";
 
 type FoodCardProps = {
-  post: FeedPost;
+  post: Post;
   onSwipeLeft: () => void;
   handleNext: () => void;
   handlePrevious: () => void;
@@ -27,8 +28,6 @@ export default function FoodCard({
   const rotate = useTransform(x, [-400, 0], [-12, 0]);
   const opacity = useTransform(x, [-500, -250, 0], [0.4, 1, 1]);
 
-  // Temporary mock data until the API provides these values.
-  const averageRating = 8.7;
   const ratingCount = 124;
 
   useEffect(() => {
@@ -144,7 +143,7 @@ export default function FoodCard({
             {/* Average rating + actions */}
             <div className="mb-5 flex items-center gap-3 border-y border-white/10 py-4">
               <div className="font-display text-3xl font-semibold text-[#ff795c]">
-                {averageRating.toFixed(1)}
+                <AverageRating rating={post.averageRating} />
               </div>
 
               <div className="leading-tight">

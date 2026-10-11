@@ -1,4 +1,5 @@
 import { apiFetch } from "./token.service";
+import { Post } from "../helper/types";
 
 type CreatePostData = {
   title: string;
@@ -10,20 +11,20 @@ type createPostSubmission = CreatePostData & {
   publicId: string;
 }
 
-export type FeedPost = {
-  id: string;
-  title: string;
-  tags: string[];
-  imageUrl: string;
-  createdAt: string;
-  author: {
-    id: string;
-    username: string;
-  };
-};
+// export type FeedPost = {
+//   id: string;
+//   title: string;
+//   tags: string[];
+//   imageUrl: string;
+//   createdAt: string;
+//   author: {
+//     id: string;
+//     username: string;
+//   };
+// };
 
 export type FeedResponse = {
-  items: FeedPost[];
+  items: Post[];
   nextCursor: string | null;
 };
 

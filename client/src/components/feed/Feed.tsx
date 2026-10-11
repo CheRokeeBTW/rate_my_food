@@ -5,11 +5,12 @@ import FoodImg from '../../../public/FoodImg.jpeg';
 import SecondFoodImg from '../../../public/Siritho_iPhone_Food-2.jpg'
 import Rating from "./RatingBar";
 import { useRouter } from "next/navigation";
-import { getFeed, FeedPost, markPostViewed } from "@/app/services/posts.service";
+import { getFeed, markPostViewed } from "@/app/services/posts.service";
 import { useState, useEffect } from "react";
 import { createRating, CreateRating } from "@/app/services/rating.service";
 import { useTokenStore } from "@/stores/auth.stores";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Post } from "@/app/helper/types";
 
 type FeedProps = {
     onRequireAuth: () => void;
@@ -19,7 +20,7 @@ const INITIAL_POSTS = 5;
 const PREFETCH_THRESHOLD = 2;
 
 export function Feed({ onRequireAuth } : FeedProps){
-    const [posts, setPosts] = useState<FeedPost[]>([]);
+    const [posts, setPosts] = useState<Post[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [nextCursor, setNextCursor] = useState<string | null>(null);
     const [isFetching, setIsFetching] = useState(false);

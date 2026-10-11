@@ -5,6 +5,10 @@ export type Post = {
     createdAt: string;
     imageUrl: string;
     title: string;
+    author: {
+        id: string;
+        username: string;
+    };
 }
 
 export type SubmittedPost = {
