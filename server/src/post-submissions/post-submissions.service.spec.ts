@@ -36,6 +36,7 @@ describe('PostSubmissionsService', () => {
   describe('createSubmission', () => {
     const dto = {
       title: 'Homemade pizza',
+      description: 'Homemade pizza with mozzarella and basil',
       imageUrl: 'https://example.com/pizza.jpg',
       tags: ['italian', 'dinner'],
       publicId: 'rate-my-food/pizza123',
@@ -57,11 +58,16 @@ describe('PostSubmissionsService', () => {
 
       const result = await service.createSubmission(dto, userId);
 
-      expect(prismaServiceMock.postSubmission.create).toHaveBeenCalledTimes(1);
+      expect(
+        prismaServiceMock.postSubmission.create,
+      ).toHaveBeenCalledTimes(1);
 
-      expect(prismaServiceMock.postSubmission.create).toHaveBeenCalledWith({
+      expect(
+        prismaServiceMock.postSubmission.create,
+      ).toHaveBeenCalledWith({
         data: {
           title: dto.title,
+          description: dto.description,
           imageUrl: dto.imageUrl,
           tags: dto.tags,
           publicId: dto.publicId,

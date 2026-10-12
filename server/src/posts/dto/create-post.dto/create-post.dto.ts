@@ -14,4 +14,8 @@ export class CreatePostDto {
     @MaxLength(15, { each: true })
     @ArrayMaxSize(10, { message: 'The maximum amount of tags is 10' })
     readonly tags!: string[];
+
+    @IsString()
+    @MaxLength(100)
+    readonly description!: string;
 }

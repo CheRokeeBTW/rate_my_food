@@ -164,6 +164,7 @@ async getFeed(
       data: {
         title: dto.title,
         tags: dto.tags,
+        description: dto.description,
         imageUrl: dto.imageUrl,
         authorId: userId,
       },

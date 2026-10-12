@@ -379,34 +379,36 @@ describe('PostsService', () => {
   });
 
   describe('createPost', () => {
-    it('should create a post with its author and tags', async () => {
-      const dto = {
-        title: 'Pizza',
-        tags: ['italian', 'dinner'],
-        imageUrl: 'pizza.jpg',
-      };
+  it('should create a post with its author, tags, and description', async () => {
+    const dto = {
+      title: 'Pizza',
+      description: 'Homemade pepperoni pizza',
+      tags: ['italian', 'dinner'],
+      imageUrl: 'pizza.jpg',
+    };
 
-      const createdPost = {
-        id: 'post-1',
-        ...dto,
+    const createdPost = {
+      id: 'post-1',
+      ...dto,
+      authorId: 'user-1',
+    };
+
+    prismaMock.post.create.mockResolvedValue(createdPost);
+
+    await expect(
+      service.createPost(dto, 'user-1'),
+    ).resolves.toEqual(createdPost);
+
+    expect(prismaMock.post.create).toHaveBeenCalledWith({
+      data: {
+        title: dto.title,
+        description: dto.description,
+        tags: dto.tags,
+        imageUrl: dto.imageUrl,
         authorId: 'user-1',
-      };
-
-      prismaMock.post.create.mockResolvedValue(createdPost);
-
-      await expect(
-        service.createPost(dto, 'user-1'),
-      ).resolves.toEqual(createdPost);
-
-      expect(prismaMock.post.create).toHaveBeenCalledWith({
-        data: {
-          title: dto.title,
-          tags: dto.tags,
-          imageUrl: dto.imageUrl,
-          authorId: 'user-1',
-        },
-      });
+      },
     });
+  });
   });
 
   describe('updatePost', () => {

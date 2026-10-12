@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UnauthorizedException } from '@nestjs/common';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guards';
@@ -58,10 +57,12 @@ describe('PostsController', () => {
         {
           id: 'post-1',
           title: 'Pizza',
+          description: 'Homemade pepperoni pizza',
         },
         {
           id: 'post-2',
           title: 'Burger',
+          description: 'Double cheeseburger with fries',
         },
       ];
 
@@ -85,6 +86,7 @@ describe('PostsController', () => {
           {
             id: 'post-1',
             title: 'Pizza',
+            description: 'Homemade pepperoni pizza',
           },
         ],
         nextCursor: null,
@@ -96,19 +98,10 @@ describe('PostsController', () => {
       const req = {} as any;
       const res = {} as any;
 
-      const result = await controller.getFeed(
-        undefined,
-        req,
-        res,
-      );
+      const result = await controller.getFeed(undefined, req, res);
 
       expect(result).toEqual(feed);
-
-      expect(getVisitorKeyMock).toHaveBeenCalledWith(
-        req,
-        res,
-      );
-
+      expect(getVisitorKeyMock).toHaveBeenCalledWith(req, res);
       expect(postsServiceMock.getFeed).toHaveBeenCalledWith(
         undefined,
         visitor,
@@ -129,11 +122,7 @@ describe('PostsController', () => {
       const req = {} as any;
       const res = {} as any;
 
-      await controller.getFeed(
-        'post-10',
-        req,
-        res,
-      );
+      await controller.getFeed('post-10', req, res);
 
       expect(postsServiceMock.getFeed).toHaveBeenCalledWith(
         'post-10',
@@ -167,12 +156,7 @@ describe('PostsController', () => {
       );
 
       expect(result).toEqual(view);
-
-      expect(getVisitorKeyMock).toHaveBeenCalledWith(
-        req,
-        res,
-      );
-
+      expect(getVisitorKeyMock).toHaveBeenCalledWith(req, res);
       expect(postsServiceMock.markPostViewed).toHaveBeenCalledWith(
         'post-1',
         visitor,
@@ -185,6 +169,7 @@ describe('PostsController', () => {
       const post = {
         id: 'post-1',
         title: 'Pizza',
+        description: 'Homemade pepperoni pizza',
       };
 
       postsServiceMock.getPost.mockResolvedValue(post);
@@ -192,65 +177,61 @@ describe('PostsController', () => {
       const result = await controller.getPost('post-1');
 
       expect(result).toEqual(post);
-
-      expect(postsServiceMock.getPost).toHaveBeenCalledWith(
-        'post-1',
-      );
+      expect(postsServiceMock.getPost).toHaveBeenCalledWith('post-1');
     });
   });
 
   describe('createPost', () => {
-    it('should create a post using the authenticated user id', async () => {
-      const dto = {
-        title: 'Pizza',
-        imageUrl: 'pizza.jpg',
-      };
+it('should create a post using the authenticated user id', async () => {
+  const dto = {
+    title: 'Pizza',
+    description: 'Homemade pepperoni pizza',
+    imageUrl: 'pizza.jpg',
+    tags: ['italian', 'dinner'],
+  };
 
-      const createdPost = {
-        id: 'post-1',
-        ...dto,
-        authorId: 'user-1',
-      };
+  const createdPost = {
+    id: 'post-1',
+    ...dto,
+    authorId: 'user-1',
+  };
 
-      postsServiceMock.createPost.mockResolvedValue(createdPost);
+  postsServiceMock.createPost.mockResolvedValue(createdPost);
 
-      const req = {
-        user: {
-          sub: 'user-1',
-        },
-      } as any;
+  const req = {
+    user: {
+      sub: 'user-1',
+    },
+  } as any;
 
-      const result = await controller.createPost(dto, req);
+  const result = await controller.createPost(dto, req);
 
-      expect(result).toEqual(createdPost);
-
-      expect(postsServiceMock.createPost).toHaveBeenCalledWith(
-        dto,
-        'user-1',
-      );
-    });
+  expect(result).toEqual(createdPost);
+  expect(postsServiceMock.createPost).toHaveBeenCalledWith(
+    dto,
+    'user-1',
+  );
+});
   });
 
   describe('updatePost', () => {
     it('should update a post', async () => {
       const dto = {
         title: 'Updated Pizza',
+        description: 'Pizza with extra mozzarella',
       };
 
       const updatedPost = {
         id: 'post-1',
         title: 'Updated Pizza',
+        description: 'Pizza with extra mozzarella',
       };
 
       postsServiceMock.updatePost.mockResolvedValue(updatedPost);
 
-      const result = await controller.updatePost(
-        'post-1',
-        dto,
-      );
+      const result = await controller.updatePost('post-1', dto);
 
       expect(result).toEqual(updatedPost);
-
       expect(postsServiceMock.updatePost).toHaveBeenCalledWith(
         'post-1',
         dto,
@@ -263,6 +244,7 @@ describe('PostsController', () => {
       const deletedPost = {
         id: 'post-1',
         title: 'Pizza',
+        description: 'Homemade pepperoni pizza',
       };
 
       postsServiceMock.deletePost.mockResolvedValue(deletedPost);
@@ -270,10 +252,7 @@ describe('PostsController', () => {
       const result = await controller.deletePost('post-1');
 
       expect(result).toEqual(deletedPost);
-
-      expect(postsServiceMock.deletePost).toHaveBeenCalledWith(
-        'post-1',
-      );
+      expect(postsServiceMock.deletePost).toHaveBeenCalledWith('post-1');
     });
   });
 });

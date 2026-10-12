@@ -15,6 +15,7 @@ export class PostSubmissionsService {
                 title: dto.title,
                 imageUrl: dto.imageUrl,
                 tags: dto.tags,
+                description: dto.description,
                 publicId: dto.publicId,
                 authorId: userId,
             },

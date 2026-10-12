@@ -16,5 +16,9 @@ export class CreatePostSubmissionDto {
     readonly tags!: string[];
 
     @IsString()
+    @MaxLength(100)
+    readonly description!: string;
+
+    @IsString()
     readonly publicId!: string;
 }
