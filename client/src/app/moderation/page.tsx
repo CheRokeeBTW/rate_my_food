@@ -30,6 +30,8 @@ export default function Moderation() {
     const handleApproveSubmission = async (submissionId: string): Promise<void> => {
         try{
             await approvePostSubmission(submissionId);
+            
+            setSubmissions((prevSubmission) => prevSubmission.filter((submission) => submission.id !== submissionId)) 
         } catch (err){
             console.error("Failed to approve this post")
         } 
@@ -91,6 +93,10 @@ return (
                             <div className="p-5">
                             <h2 className="truncate text-lg font-semibold text-white">
                                 {submission.title}
+                            </h2>
+
+                            <h2 className="text-sm text-white">
+                                {submission.description}
                             </h2>
 
                             {submission.tags.length > 0 && (

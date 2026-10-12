@@ -114,7 +114,6 @@ export default function FoodCard({
             </button>
           </div>
 
-          {/* Title + tags */}
           <div className="mt-1 sm:mt-8">
             <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ff795c]">
               On the menu
@@ -123,6 +122,8 @@ export default function FoodCard({
             <h2 className="break-words font-display text-[2rem] leading-[1.02] font-semibold tracking-[-0.04em] text-[#f7f3ea] sm:text-[2.45rem]">
               {post.title}
             </h2>
+
+            <p className="mt-4 text-sm leading-6 text-white/55">{post.description}</p>
 
             {post.tags.length > 0 && (
               <div className="mt-5 flex flex-wrap gap-2">

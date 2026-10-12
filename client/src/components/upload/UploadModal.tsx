@@ -21,6 +21,7 @@ import {
 
 import { getCroppedImage } from "./cropImage";
 import { createPostSubmission } from "@/app/services/posts.service";
+import { desc } from "motion/react-client";
 
 type UploadModalProps = {
     onClose: () => void;
@@ -90,6 +91,7 @@ export default function UploadModal({
         useState<CloudinaryUploadResponse | null>(null);
 
     const [title, setTitle] = useState<string>("");
+    const [description, setDescription] = useState<string>("");
 
     const [tags, setTags] = useState<string[]>([""]);
 
@@ -147,6 +149,7 @@ export default function UploadModal({
         setUploadedImage(null);
         setSubmitted(false);
         setTitle("");
+        setDescription("");
         setTags([""]);
     };
 
@@ -294,6 +297,7 @@ export default function UploadModal({
         setUploadedImage(null);
 
         setTitle("");
+        setDescription("")
         setTags([""]);
 
         setError(null);
@@ -389,6 +393,7 @@ export default function UploadModal({
                     tags: tags
                         .map((tag) => tag.trim())
                         .filter(Boolean),
+                    description: description,
                     publicId:
                         uploadedImage.public_id,
                 });
@@ -827,10 +832,55 @@ export default function UploadModal({
                                         </span>
                                     </div>
                                 </div>
+
+                                <div>
+                                    <label
+                                        htmlFor="post-description"
+                                        className="mb-2 block text-sm font-medium text-zinc-300"
+                                    >
+                                        Description (optional)
+                                    </label>
+
+                                    <input
+                                        id="post-description"
+                                        type="text"
+                                        value={description}
+                                        onChange={(event) => {
+                                            setDescription(
+                                                event.target.value,
+                                            );
+                                            setError(null);
+                                        }}
+                                        placeholder="Add some information/story about your food?"
+                                        maxLength={100}
+                                        className={`
+                                            w-full
+                                            rounded-xl
+                                            border
+                                            bg-zinc-800
+                                            px-4
+                                            py-3
+                                            text-white
+                                            outline-none
+                                            transition
+                                            ${
+                                                error
+                                                    ? "border-red-500"
+                                                    : "border-zinc-700 focus:border-green-500"
+                                            }
+                                        `}
+                                    />
+
+                                    <div className="mt-1 flex justify-end">
+                                        <span className="text-xs text-zinc-500">
+                                            {description.length}/100
+                                        </span>
+                                    </div>
+                                </div>
                                 <div>
                                 <div className="mb-2 flex items-center justify-between">
                                     <label className="text-sm font-medium text-zinc-300">
-                                        Tags
+                                        Tags (optional)
                                     </label>
 
                                     <span className="text-xs text-zinc-500">

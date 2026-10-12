@@ -81,6 +81,7 @@ async getFeed(
       id: true,
       title: true,
       tags: true,
+      description: true,
       imageUrl: true,
       createdAt: true,
 

@@ -45,12 +45,16 @@ describe('PostsService', () => {
         {
           id: 'post-1',
           title: 'Pizza',
+          tags: ["burger", "dinner", "goyslop"],
+          description: "This is my dinner today/goyslop day",
           imageUrl: 'pizza.jpg',
           authorId: 'user-1',
         },
         {
           id: 'post-2',
           title: 'Burger',
+          tags: [],
+          description: null,
           imageUrl: 'burger.jpg',
           authorId: 'user-2',
         },
@@ -69,6 +73,8 @@ describe('PostsService', () => {
       const post = {
         id: 'post-1',
         title: 'Pizza',
+        tags: ["burger", "dinner", "goyslop"],
+        description: "This is my dinner today/goyslop day",
         imageUrl: 'pizza.jpg',
         authorId: 'user-1',
       };
@@ -100,6 +106,7 @@ describe('PostsService', () => {
       id: true,
       title: true,
       tags: true,
+      description: true,
       imageUrl: true,
       createdAt: true,
       author: {
@@ -114,6 +121,7 @@ describe('PostsService', () => {
       id: `post-${index}`,
       title: `Post ${index}`,
       tags: ['food'],
+      description: "Testing description",
       imageUrl: `image-${index}.jpg`,
       createdAt: new Date(`2026-01-${String(index).padStart(2, '0')}T12:00:00Z`),
       author: {

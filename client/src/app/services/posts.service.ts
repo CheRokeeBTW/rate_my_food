@@ -4,6 +4,7 @@ import { Post } from "../helper/types";
 type CreatePostData = {
   title: string;
   tags: string[];
+  description: string | null;
   imageUrl: string;
 };
 
@@ -28,14 +29,14 @@ export type FeedResponse = {
   nextCursor: string | null;
 };
 
-export async function createPost({ title, tags, imageUrl } : CreatePostData) {
+export async function createPost({ title, tags, description, imageUrl } : CreatePostData) {
 
     const response =  await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, tags, imageUrl }),
+        body: JSON.stringify({ title, tags, description, imageUrl }),
     });
 
     const data = await response.json();
@@ -83,7 +84,7 @@ export async function markPostViewed(postId: string) {
   return response.json();
 }
 
-export async function createPostSubmission({ title, tags, imageUrl, publicId } : createPostSubmission){
+export async function createPostSubmission({ title, tags, description, imageUrl, publicId } : createPostSubmission){
   const response = await apiFetch(
     `${process.env.NEXT_PUBLIC_API_URL}/post-submissions`,
     {
@@ -91,7 +92,7 @@ export async function createPostSubmission({ title, tags, imageUrl, publicId } :
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, tags, imageUrl, publicId })
+      body: JSON.stringify({ title, tags, description, imageUrl, publicId })
     }
   );
 
