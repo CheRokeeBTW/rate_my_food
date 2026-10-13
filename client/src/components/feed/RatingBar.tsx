@@ -14,7 +14,6 @@ export default function Rating({ postId, onRate, onRequireAuth } : RatingProps) 
     const [hovered, setHover] = useState<number | null>(null);
     const [selected, setSelected] = useState<number | null>(null);
     const token = useTokenStore(state => state.accessToken);
-    const stars = Array.from({ length: 10 }, (_, index) => index + 1);
 
     useEffect(() => {
         setSelected(null)
@@ -31,33 +30,27 @@ export default function Rating({ postId, onRate, onRequireAuth } : RatingProps) 
     };
 
     return(
-        <div>
+        <>
             <div 
-                className="flex gap-2 justify-center mt-5 hover:cursor-pointer"
+                className="mt-4 grid grid-cols-10 gap-1.5 hover:cursor-pointer"
                 onMouseLeave={() => setHover(null)}
             >
-                {stars.map(star => (
-                    <button
-                        key = {star}
-                        onClick={() => handleClick(star)}
-                        onMouseEnter={() => setHover(star)}
-                        className={`hover:cursor-pointer ${hovered !== null
-                        ? star <= hovered
-                        ? "fill-yellow-400 text-yellow-400"
-                        : "fill-transparent text-yellow-400"
-                        : "text-yellow-400"
+                {Array.from({ length: 10 }, (_, index) => index + 1).map((number: number) => (
+                  <button
+                    key={number}
+                    onClick={() => handleClick(number)}
+                    aria-label={`${number} out of 10`}
+                    onMouseEnter={() => setHover(number)}
+                    className={`aspect-square rounded-lg text-[11px] font-bold transition sm:rounded-xl hover:cursor-pointer ${
+                      hovered !== null && number <= hovered
+                        ? "bg-[#ff6542] text-white shadow-[0_5px_16px_rgba(255,101,66,.22)]"
+                        : "bg-white/[0.07] text-white/45 hover:-translate-y-0.5 hover:bg-white/15 hover:text-white"
                     }`}
-                    >
-                        <Star
-                            className="transition-transform duration-150 hover:scale-110"
-                            size={32} fill={star <= (hovered ?? selected ?? 0) ? "currentColor" : "none"} 
-                        />
-                    </button>
+                  >
+                    {number}
+                  </button>
                 ))}
-            </div>
-                <div className="flex justify-center mt-5 font-sans">
-                    Rate this photo
-                </div>
-        </div>
+              </div>
+        </>
     )
 }

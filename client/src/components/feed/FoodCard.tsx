@@ -139,16 +139,14 @@ export default function FoodCard({
             )}
           </div>
 
-          {/* Bottom section */}
           <div className="mt-auto pt-7">
-            {/* Average rating + actions */}
             <div className="mb-5 flex items-center gap-3 border-y border-white/10 py-4">
             {ratingCount ? (
               <>
                 <div className="font-display text-3xl font-semibold text-[#ff795c]">
-                  <AverageRating rating={post.averageRating} />
+                  {post.averageRating?.toFixed(1)}
                 </div>
-                <div className="leading-tight">
+                <div className="leading-tight ml-1">
                   <div
                     aria-label="5 out of 5 decorative stars"
                     className="text-xs tracking-[0.15em] text-[#ff795c]"
@@ -156,7 +154,7 @@ export default function FoodCard({
                     ★★★★★
                   </div>
                   <p className="mt-1 text-[10px] text-white/35">
-                    {ratingCount} community ratings
+                    {ratingCount} community {ratingCount === 1 ? 'rating' : 'ratings'}
                   </p>
                 </div>
               </>
