@@ -28,7 +28,7 @@ export default function FoodCard({
   const rotate = useTransform(x, [-400, 0], [-12, 0]);
   const opacity = useTransform(x, [-500, -250, 0], [0.4, 1, 1]);
 
-  const ratingCount = 124;
+  const ratingCount = post.ratingCount
 
   useEffect(() => {
     x.set(-40);
@@ -41,7 +41,7 @@ export default function FoodCard({
 
   return (
     <motion.div
-      className="relative mx-auto w-full max-w-[900px]"
+      className="relative mx-auto w-full max-w-[1200px]"
       style={{ x, rotate, opacity, touchAction: "pan-y" }}
       drag="x"
       dragConstraints={{ left: -1000, right: 0 }}
@@ -143,22 +143,28 @@ export default function FoodCard({
           <div className="mt-auto pt-7">
             {/* Average rating + actions */}
             <div className="mb-5 flex items-center gap-3 border-y border-white/10 py-4">
-              <div className="font-display text-3xl font-semibold text-[#ff795c]">
-                <AverageRating rating={post.averageRating} />
-              </div>
-
-              <div className="leading-tight">
-                <div
-                  aria-label="5 out of 5 decorative stars"
-                  className="text-xs tracking-[0.15em] text-[#ff795c]"
-                >
-                  ★★★★★
+            {ratingCount ? (
+              <>
+                <div className="font-display text-3xl font-semibold text-[#ff795c]">
+                  <AverageRating rating={post.averageRating} />
                 </div>
-                <p className="mt-1 text-[10px] text-white/35">
-                  {ratingCount} community ratings
-                </p>
+                <div className="leading-tight">
+                  <div
+                    aria-label="5 out of 5 decorative stars"
+                    className="text-xs tracking-[0.15em] text-[#ff795c]"
+                  >
+                    ★★★★★
+                  </div>
+                  <p className="mt-1 text-[10px] text-white/35">
+                    {ratingCount} community ratings
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="font-display text-xl font-semibold text-[#ff795c] flex text-nowrap">
+                This post has no rating yet
               </div>
-
+              )}
               <div className="ml-auto flex gap-2">
                 <button
                   type="button"

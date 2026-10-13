@@ -91,14 +91,43 @@ async getFeed(
           username: true,
         },
       },
+
+      ratings: {
+        select: {
+            value: true
+        }
+      },
+      _count: {
+        select: {
+          ratings: true
+        }
+      }
     },
   });
 
   const hasMore = posts.length > take;
 
-  const items = hasMore
+  const feedPosts = hasMore
     ? posts.slice(0, take)
     : posts;
+
+    const items = feedPosts.map(post => {
+      const {ratings, _count, ...postData} = post;
+
+      const ratingCount = _count.ratings
+
+      const averageRating = 
+        !ratingCount
+          ? null 
+          : ratings.reduce((acc, rating) => acc + rating.value, 0) / ratings.length
+      
+      return {
+        ...postData,
+        ratingCount,
+        averageRating,
+      }
+    })
+
 
   return {
     items,

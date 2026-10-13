@@ -11,6 +11,7 @@ export type Post = {
     createdAt: string;
     imageUrl: string;
     title: string;
+    ratingCount: number;
     author: AuthorT;
 }
 

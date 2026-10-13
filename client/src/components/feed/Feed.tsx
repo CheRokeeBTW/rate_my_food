@@ -16,7 +16,6 @@ type FeedProps = {
     onRequireAuth: () => void;
 };
 
-const INITIAL_POSTS = 5;
 const PREFETCH_THRESHOLD = 2;
 
 export function Feed({ onRequireAuth } : FeedProps){

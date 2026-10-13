@@ -67,11 +67,13 @@ export class UsersService {
 
         const posts = user.posts.map(post => {
             const { ratings, ...postData } = post;
+            const ratingCount = ratings.length;
 
             if(post.ratings.length === 0){
                 return {
                     ...postData,
                     averageRating: null,
+                    ratingCount: 0,
                 };
             }
 
@@ -81,6 +83,7 @@ export class UsersService {
             return {
                 ...postData,
                 averageRating: average,
+                ratingCount,
             };
         });
 
