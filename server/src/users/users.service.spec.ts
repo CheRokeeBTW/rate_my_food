@@ -169,6 +169,7 @@ describe('UsersService', () => {
             imageUrl: 'pizza.jpg',
             createdAt,
             averageRating: 8,
+            ratingCount: 3,
           },
         ],
       });
@@ -207,6 +208,7 @@ describe('UsersService', () => {
             imageUrl: 'pizza.jpg',
             createdAt,
             averageRating: null,
+            ratingCount: 0,
           },
         ],
       });

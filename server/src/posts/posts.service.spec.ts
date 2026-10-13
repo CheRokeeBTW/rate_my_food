@@ -109,6 +109,16 @@ describe('PostsService', () => {
       description: true,
       imageUrl: true,
       createdAt: true,
+      ratings: {
+        select: {
+          value: true,
+        },
+      },
+      _count: {
+        select: {
+          ratings: true,
+        },
+      },
       author: {
         select: {
           id: true,
@@ -124,6 +134,8 @@ describe('PostsService', () => {
       description: "Testing description",
       imageUrl: `image-${index}.jpg`,
       createdAt: new Date(`2026-01-${String(index).padStart(2, '0')}T12:00:00Z`),
+      ratings: [{ value: 4 }, { value: 5 }],
+      _count: { ratings: 2 },
       author: {
         id: `user-${index}`,
         username: `user${index}`,
@@ -139,10 +151,20 @@ describe('PostsService', () => {
         userId: 'user-1',
       });
 
-      expect(result).toEqual({
-        items: posts,
-        nextCursor: null,
-      });
+    expect(result).toEqual({
+      items: posts.map((post) => {
+        const { ratings, _count, ...postData } = post;
+
+        return {
+          ...postData,
+          ratingCount: _count.ratings,
+          averageRating:
+            ratings.reduce((sum, rating) => sum + rating.value, 0) /
+            _count.ratings,
+        };
+      }),
+      nextCursor: null,
+    });
 
       expect(prismaMock.post.findMany).toHaveBeenCalledWith({
         where: {
@@ -170,7 +192,17 @@ describe('PostsService', () => {
       });
 
       expect(result).toEqual({
-        items: posts,
+        items: posts.map((post) => {
+          const { ratings, _count, ...postData } = post;
+
+          return {
+            ...postData,
+            ratingCount: _count.ratings,
+            averageRating:
+              ratings.reduce((sum, rating) => sum + rating.value, 0) /
+              _count.ratings,
+          };
+        }),
         nextCursor: null,
       });
 
@@ -202,7 +234,19 @@ describe('PostsService', () => {
       });
 
       expect(result.items).toHaveLength(10);
-      expect(result.items).toEqual(posts.slice(0, 10));
+      expect(result.items).toEqual(
+        posts.slice(0, 10).map((post) => {
+          const { ratings, _count, ...postData } = post;
+
+          return {
+            ...postData,
+            ratingCount: _count.ratings,
+            averageRating:
+              ratings.reduce((sum, rating) => sum + rating.value, 0) /
+              _count.ratings,
+          };
+        }),
+      );
       expect(result.nextCursor).toBe('post-10');
     });
 
