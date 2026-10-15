@@ -3,7 +3,8 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
 import type { Request } from 'express';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUsernameDto } from './dto/update-username.dto';
+import { UpdateAvatarDto } from './dto/update-avarat.dto';
 
 @Controller('users')
 export class UsersController {
@@ -24,11 +25,22 @@ export class UsersController {
     @Patch('/me/username')
     updateUsername(
         @Req() req: Request,
-        @Body() updateUserDto: UpdateUserDto, 
+        @Body() updateUserDto: UpdateUsernameDto, 
     ){
         const userId = req.user!.sub;
 
         return this.usersService.updateUsername(userId, updateUserDto);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch('/me/avatar')
+    updateAvatar(
+        @Req() req: Request,
+        @Body() UpdateAvatarDto: UpdateAvatarDto,
+    ) {
+        const userId = req.user!.sub;
+
+        return this.usersService.updateAvatar(userId, UpdateAvatarDto);
     }
 
     @Get(':id')

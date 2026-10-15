@@ -188,7 +188,6 @@ export default function FoodCard({
               <p className="mb-4 text-[11px] text-white/35">
                 How good does it look?
               </p>
-
               {ratingSlot}
             </div>
           </div>

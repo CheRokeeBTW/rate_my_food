@@ -48,7 +48,6 @@ export async function createPost({ title, tags, description, imageUrl } : Create
     return data
 };
 
-
 export async function getFeed( cursor?: string ): Promise<FeedResponse> {
   let url = `${process.env.NEXT_PUBLIC_API_URL}/posts/feed`;
 
