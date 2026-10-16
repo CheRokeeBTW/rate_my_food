@@ -8,6 +8,7 @@ import { RatingsModule } from './ratings/ratings.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { PostSubmissionsModule } from './post-submissions/post-submissions.module';
 import { ModerationModule } from './moderation/moderation.module';
+import { FollowModule } from './follow/follow.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { ModerationModule } from './moderation/moderation.module';
     RatingsModule,
     CloudinaryModule,
     PostSubmissionsModule,
-    ModerationModule
+    ModerationModule,
+    FollowModule
   ],
 })
 export class AppModule {}
