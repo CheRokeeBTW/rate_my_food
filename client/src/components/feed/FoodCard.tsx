@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Post } from "@/app/helper/types";
 import { motion, useMotionValue, useTransform, animate } from "motion/react";
 import { ChevronLeft, ChevronRight, Bookmark, Share2 } from "lucide-react";
+import { followUser, unfollowUser } from "@/app/services/follow.service";
 import AverageRating from "./AverageRating";
 
 type FoodCardProps = {
@@ -27,8 +28,15 @@ export default function FoodCard({
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-400, 0], [-12, 0]);
   const opacity = useTransform(x, [-500, -250, 0], [0.4, 1, 1]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<String | null>(null);
+  const [isFollowing, setIsFollowing] = useState<boolean>(post.isFollowing);
 
   const ratingCount = post.ratingCount
+
+  useEffect(() => {
+    setIsFollowing(post.isFollowing);
+  }, [post.id, post.isFollowing]);
 
   useEffect(() => {
     x.set(-40);
@@ -38,6 +46,55 @@ export default function FoodCard({
       ease: "easeOut",
     });
   }, [post.id, x]);
+
+  const handleToggleFollow = async (followingId: string) => {
+    if(isLoading) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try{
+      if(isFollowing){
+        await unfollowUser(followingId);
+
+        setIsFollowing(false);
+      } else {
+        await followUser(followingId);
+
+        setIsFollowing(true);
+      };
+    } catch (err) {
+        console.error("Failed to update follow status:", error);
+        if(err instanceof Error) {
+          setError(err.message)
+        }
+        else {
+          setError("Failed to update follow status");
+        }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUnfollowUser = async (followingId: string) => {
+    try{
+      setIsLoading(true);
+      setError(null);
+
+      await unfollowUser(followingId);
+
+      setIsLoading(false);
+    } catch (err) {
+      console.error(err);
+
+      if(err instanceof Error){
+        setError(err.message)
+      }
+      else{
+        setError("Failed to unfollow user")
+      }
+    }
+  };
 
   return (
     <motion.div
@@ -76,7 +133,6 @@ export default function FoodCard({
 
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/80 to-transparent" />
 
-          {/* Mobile author badge */}
           <div className="absolute bottom-5 left-5 flex items-center gap-3 sm:hidden">
             <div className="grid size-9 place-items-center rounded-full border border-white/20 bg-white/15 text-xs font-bold text-white backdrop-blur">
               {post.author.username.charAt(0).toUpperCase()}
@@ -90,9 +146,7 @@ export default function FoodCard({
           </div>
         </div>
 
-        {/* RIGHT: Information panel */}
         <aside className="flex min-h-[520px] flex-col rounded-[26px] border border-white/10 bg-[#1a1b17]/95 p-5 backdrop-blur-xl sm:h-[min(72svh,680px)] sm:p-7">
-          {/* Author (desktop) */}
           <div className="hidden items-center gap-3 sm:flex">
             <div className="grid size-11 shrink-0 place-items-center rounded-full border border-white/10 bg-[#c79775] text-xs font-bold text-white">
               {post.author.username.charAt(0).toUpperCase()}
@@ -104,13 +158,13 @@ export default function FoodCard({
               </p>
               <p className="text-xs text-white/45">Food contributor</p>
             </div>
-
             <button
               type="button"
               aria-label="Follow author"
-              className="rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-white transition hover:bg-white hover:text-black"
+              onClick={() => handleToggleFollow(post.author.id)}
+              className="hover: cursor-pointer rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-white transition hover:bg-white hover:text-black"
             >
-              Follow
+              {!isFollowing ? "Follow" : "Unfollow"}
             </button>
           </div>
 

@@ -17,6 +17,9 @@ describe('PostsService', () => {
     postView: {
       upsert: jest.fn(),
     },
+    follow: {
+      findMany: jest.fn(),
+    },
   };
 
   beforeEach(async () => {
@@ -131,9 +134,11 @@ describe('PostsService', () => {
       id: `post-${index}`,
       title: `Post ${index}`,
       tags: ['food'],
-      description: "Testing description",
+      description: 'Testing description',
       imageUrl: `image-${index}.jpg`,
-      createdAt: new Date(`2026-01-${String(index).padStart(2, '0')}T12:00:00Z`),
+      createdAt: new Date(
+        `2026-01-${String(index).padStart(2, '0')}T12:00:00Z`,
+      ),
       ratings: [{ value: 4 }, { value: 5 }],
       _count: { ratings: 2 },
       author: {
@@ -142,17 +147,11 @@ describe('PostsService', () => {
       },
     });
 
-    it('should return feed for an authenticated user', async () => {
-      const posts = [makePost(1), makePost(2)];
-
-      prismaMock.post.findMany.mockResolvedValue(posts);
-
-      const result = await service.getFeed(undefined, {
-        userId: 'user-1',
-      });
-
-    expect(result).toEqual({
-      items: posts.map((post) => {
+    const expectedItems = (
+      posts: ReturnType<typeof makePost>[],
+      followingIds: string[] = [],
+    ) =>
+      posts.map((post) => {
         const { ratings, _count, ...postData } = post;
 
         return {
@@ -161,16 +160,36 @@ describe('PostsService', () => {
           averageRating:
             ratings.reduce((sum, rating) => sum + rating.value, 0) /
             _count.ratings,
+          isFollowing: followingIds.includes(post.author.id),
         };
-      }),
-      nextCursor: null,
+      });
+
+    beforeEach(() => {
+      prismaMock.follow.findMany.mockResolvedValue([]);
     });
+
+    it('should return feed with follow status for an authenticated user', async () => {
+      const posts = [makePost(1), makePost(2)];
+
+      prismaMock.post.findMany.mockResolvedValue(posts);
+      prismaMock.follow.findMany.mockResolvedValue([
+        { followingId: 'user-2' },
+      ]);
+
+      const result = await service.getFeed(undefined, {
+        userId: 'viewer-1',
+      });
+
+      expect(result).toEqual({
+        items: expectedItems(posts, ['user-2']),
+        nextCursor: null,
+      });
 
       expect(prismaMock.post.findMany).toHaveBeenCalledWith({
         where: {
           views: {
             none: {
-              userId: 'user-1',
+              userId: 'viewer-1',
             },
           },
         },
@@ -180,9 +199,21 @@ describe('PostsService', () => {
         },
         select: expectedSelect,
       });
+
+      expect(prismaMock.follow.findMany).toHaveBeenCalledWith({
+        where: {
+          followerId: 'viewer-1',
+          followingId: {
+            in: ['user-1', 'user-2'],
+          },
+        },
+        select: {
+          followingId: true,
+        },
+      });
     });
 
-    it('should return feed for an anonymous visitor', async () => {
+    it('should return false for all follow statuses for an anonymous visitor', async () => {
       const posts = [makePost(1)];
 
       prismaMock.post.findMany.mockResolvedValue(posts);
@@ -192,34 +223,11 @@ describe('PostsService', () => {
       });
 
       expect(result).toEqual({
-        items: posts.map((post) => {
-          const { ratings, _count, ...postData } = post;
-
-          return {
-            ...postData,
-            ratingCount: _count.ratings,
-            averageRating:
-              ratings.reduce((sum, rating) => sum + rating.value, 0) /
-              _count.ratings,
-          };
-        }),
+        items: expectedItems(posts),
         nextCursor: null,
       });
 
-      expect(prismaMock.post.findMany).toHaveBeenCalledWith({
-        where: {
-          views: {
-            none: {
-              visitorId: 'visitor-123',
-            },
-          },
-        },
-        take: 11,
-        orderBy: {
-          createdAt: 'desc',
-        },
-        select: expectedSelect,
-      });
+      expect(prismaMock.follow.findMany).not.toHaveBeenCalled();
     });
 
     it('should return only 10 posts and a nextCursor when more posts exist', async () => {
@@ -230,24 +238,24 @@ describe('PostsService', () => {
       prismaMock.post.findMany.mockResolvedValue(posts);
 
       const result = await service.getFeed(undefined, {
-        userId: 'user-1',
+        userId: 'viewer-1',
       });
 
       expect(result.items).toHaveLength(10);
-      expect(result.items).toEqual(
-        posts.slice(0, 10).map((post) => {
-          const { ratings, _count, ...postData } = post;
-
-          return {
-            ...postData,
-            ratingCount: _count.ratings,
-            averageRating:
-              ratings.reduce((sum, rating) => sum + rating.value, 0) /
-              _count.ratings,
-          };
-        }),
-      );
+      expect(result.items).toEqual(expectedItems(posts.slice(0, 10)));
       expect(result.nextCursor).toBe('post-10');
+
+      expect(prismaMock.follow.findMany).toHaveBeenCalledWith({
+        where: {
+          followerId: 'viewer-1',
+          followingId: {
+            in: posts.slice(0, 10).map((post) => post.author.id),
+          },
+        },
+        select: {
+          followingId: true,
+        },
+      });
     });
 
     it('should use cursor pagination', async () => {
@@ -256,14 +264,14 @@ describe('PostsService', () => {
       prismaMock.post.findMany.mockResolvedValue(posts);
 
       await service.getFeed('post-1', {
-        userId: 'user-1',
+        userId: 'viewer-1',
       });
 
       expect(prismaMock.post.findMany).toHaveBeenCalledWith({
         where: {
           views: {
             none: {
-              userId: 'user-1',
+              userId: 'viewer-1',
             },
           },
         },
@@ -280,18 +288,19 @@ describe('PostsService', () => {
     });
 
     it('should throw an error when visitor identity is missing', async () => {
-      await expect(service.getFeed(undefined, {})).rejects.toThrow(
-        'No visitor identity',
-      );
+      await expect(
+        service.getFeed(undefined, {}),
+      ).rejects.toThrow('No visitor identity');
 
       expect(prismaMock.post.findMany).not.toHaveBeenCalled();
+      expect(prismaMock.follow.findMany).not.toHaveBeenCalled();
     });
 
     it('should prefer userId when both visitor identifiers are provided', async () => {
       prismaMock.post.findMany.mockResolvedValue([]);
 
       await service.getFeed(undefined, {
-        userId: 'user-1',
+        userId: 'viewer-1',
         visitorId: 'visitor-123',
       });
 
@@ -300,14 +309,17 @@ describe('PostsService', () => {
           where: {
             views: {
               none: {
-                userId: 'user-1',
+                userId: 'viewer-1',
               },
             },
           },
         }),
       );
+
+      expect(prismaMock.follow.findMany).not.toHaveBeenCalled();
     });
   });
+
 
   describe('markPostViewed', () => {
     it('should throw NotFoundException when post does not exist', async () => {

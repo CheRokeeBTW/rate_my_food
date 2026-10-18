@@ -45,7 +45,8 @@ export class FollowService {
                 },
                 update: {},
         })
-    }
+    };
+
     async unfollowUser(
         followerId: string, 
         followingId: string
@@ -91,7 +92,7 @@ export class FollowService {
                 }
             }
         })
-    }
+    };
 
     async showFollowers(
         id: string,
@@ -176,5 +177,5 @@ export class FollowService {
             ? items[items.length - 1].id
             : null
          }
-    }
+    };
 }

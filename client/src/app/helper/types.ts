@@ -13,6 +13,7 @@ export type Post = {
     title: string;
     ratingCount: number;
     author: AuthorT;
+    isFollowing: boolean;
 }
 
 export type SubmittedPost = Post & {

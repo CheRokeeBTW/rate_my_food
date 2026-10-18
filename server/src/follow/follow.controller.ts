@@ -26,8 +26,8 @@ export class FollowController {
     };
 
     @UseGuards(JwtAuthGuard)
-    @Get('followList')
-    showFollowers(
+    @Get()
+    getFollowers(
         @Query('cursor') cursor: string | undefined,
         @Req() req: Request,
     ) {
@@ -41,17 +41,17 @@ export class FollowController {
     };
 
     @UseGuards(JwtAuthGuard)
-    @Delete('unfollowId')
+    @Delete(':followingId')
     unfollowUser(
-        @Param('unfollowId') unfollowId: string,
+        @Param('followingId') followingId: string,
         @Req() req: Request,
     ){
-        const followerId = req.user?.id
+        const followerId = req.user?.sub
 
         if(!followerId){
             throw new UnauthorizedException('User not found')
         }
 
-        return this.FollowService.unfollowUser(followerId, unfollowId)
+        return this.FollowService.unfollowUser(followerId, followingId)
     };
 }

@@ -111,6 +111,24 @@ async getFeed(
     ? posts.slice(0, take)
     : posts;
 
+  const authorIds = [...new Set(feedPosts.map(post => post.author.id))];
+
+  const follows = visitor.userId && authorIds.length
+  ? await this.prisma.follow.findMany({
+    where: {
+      followerId: visitor.userId,
+      followingId: {
+        in: authorIds
+      },
+    },
+    select: {
+      followingId: true,
+    },
+  })
+  : [];
+
+  const followingIds = new Set(follows.map(follow => follow.followingId));
+
     const items = feedPosts.map(post => {
       const {ratings, _count, ...postData} = post;
 
@@ -123,11 +141,11 @@ async getFeed(
       
       return {
         ...postData,
+        isFollowing: followingIds.has(post.author.id),
         ratingCount,
         averageRating,
       }
     })
-
 
   return {
     items,
