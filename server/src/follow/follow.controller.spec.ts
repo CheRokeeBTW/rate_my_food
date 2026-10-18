@@ -20,7 +20,6 @@ describe('FollowController', () => {
       user: sub ? { sub } : {},
     }) as unknown as Request;
 
-
   beforeEach(async () => {
     jest.clearAllMocks();
 
