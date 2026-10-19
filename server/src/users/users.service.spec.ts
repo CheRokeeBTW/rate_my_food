@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, ConflictException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { PrismaService } from 'prisma/prisma.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -14,6 +15,10 @@ describe('UsersService', () => {
     },
   };
 
+  const cloudinaryMock = {
+    deleteImage: jest.fn(),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -24,6 +29,11 @@ describe('UsersService', () => {
           provide: PrismaService,
           useValue: prismaMock,
         },
+        CloudinaryService,
+        {
+          provide: CloudinaryService,
+          useValue: cloudinaryMock,
+        }
       ],
     }).compile();
 
@@ -33,6 +43,171 @@ describe('UsersService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  describe('updateAvatar', () => {
+  it('should update the avatar and delete the previous image', async () => {
+    const dto = {
+      newAvatar: 'https://res.cloudinary.com/demo/image/upload/new.jpg',
+      publicId: 'avatars/new',
+    };
+
+    const oldAvatar = {
+      avatarPublicId: 'avatars/old',
+    };
+
+    const updatedUser = {
+      id: 'user-1',
+      username: 'testuser',
+      avatarUrl: dto.newAvatar,
+    };
+
+    prismaMock.user.findUnique.mockResolvedValue(oldAvatar);
+    prismaMock.user.update.mockResolvedValue(updatedUser);
+    cloudinaryMock.deleteImage.mockResolvedValue({ result: 'ok' });
+
+    const result = await service.updateAvatar('user-1', dto);
+
+    expect(result).toEqual(updatedUser);
+
+    expect(prismaMock.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'user-1' },
+        data: {
+          avatarUrl: dto.newAvatar,
+          avatarPublicId: dto.publicId,
+        },
+      }),
+    );
+
+    expect(cloudinaryMock.deleteImage).toHaveBeenCalledWith(
+      'avatars/old',
+    );
+  });
+
+  it('should not delete the image if the public ID has not changed', async () => {
+    const dto = {
+      newAvatar: 'https://res.cloudinary.com/demo/image/upload/avatar.jpg',
+      publicId: 'avatars/current',
+    };
+
+    prismaMock.user.findUnique.mockResolvedValue({
+      avatarPublicId: 'avatars/current',
+    });
+
+    prismaMock.user.update.mockResolvedValue({
+      id: 'user-1',
+      username: 'testuser',
+      avatarUrl: dto.newAvatar,
+    });
+
+    await service.updateAvatar('user-1', dto);
+
+    expect(cloudinaryMock.deleteImage).not.toHaveBeenCalled();
+  });
+
+  it('should throw NotFoundException if the user does not exist', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(null);
+
+    await expect(
+      service.updateAvatar('user-1', {
+        newAvatar: 'https://res.cloudinary.com/demo/image/upload/new.jpg',
+        publicId: 'avatars/new',
+      }),
+    ).rejects.toThrow(NotFoundException);
+
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
+});
+
+describe('deleteAvatar', () => {
+  it('should remove the avatar and delete the Cloudinary image', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      username: 'testuser',
+      avatarPublicId: 'avatars/current',
+    });
+
+    const updatedUser = {
+      id: 'user-1',
+      username: 'testuser',
+      avatarUrl: null,
+    };
+
+    prismaMock.user.update.mockResolvedValue(updatedUser);
+    cloudinaryMock.deleteImage.mockResolvedValue({ result: 'ok' });
+
+    const result = await service.deleteAvatar('user-1');
+
+    expect(result).toEqual(updatedUser);
+
+    expect(prismaMock.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'user-1' },
+        data: {
+          avatarUrl: null,
+          avatarPublicId: null,
+        },
+      }),
+    );
+
+    expect(cloudinaryMock.deleteImage).toHaveBeenCalledWith(
+      'avatars/current',
+    );
+  });
+
+  it('should return a null avatar when the user has no avatar', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      username: 'testuser',
+      avatarPublicId: null,
+    });
+
+    const result = await service.deleteAvatar('user-1');
+
+    expect(result).toEqual({
+      id: 'user-1',
+      username: 'testuser',
+      avatarUrl: null,
+    });
+
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+    expect(cloudinaryMock.deleteImage).not.toHaveBeenCalled();
+  });
+
+  it('should throw NotFoundException if the user does not exist', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(null);
+
+    await expect(service.deleteAvatar('user-1')).rejects.toThrow(
+      NotFoundException,
+    );
+
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+    expect(cloudinaryMock.deleteImage).not.toHaveBeenCalled();
+  });
+
+  it('should still return success if Cloudinary deletion fails', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      username: 'testuser',
+      avatarPublicId: 'avatars/current',
+    });
+
+    const updatedUser = {
+      id: 'user-1',
+      username: 'testuser',
+      avatarUrl: null,
+    };
+
+    prismaMock.user.update.mockResolvedValue(updatedUser);
+    cloudinaryMock.deleteImage.mockRejectedValue(
+      new Error('Cloudinary unavailable'),
+    );
+
+    const result = await service.deleteAvatar('user-1');
+
+    expect(result).toEqual(updatedUser);
+  });
+});
 
   describe('getUserById', () => {
     it('should return a user by id', async () => {
@@ -313,7 +488,6 @@ describe('UsersService', () => {
         },
       });
 
-      // update should never happen
       expect(prismaMock.user.update).not.toHaveBeenCalled();
     });
 

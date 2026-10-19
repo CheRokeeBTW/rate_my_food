@@ -4,6 +4,7 @@ import { UsersController } from './users.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -14,10 +15,11 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
         secret: configService.getOrThrow<string>('JWT_SECRET'),
       }),
     }),
+    CloudinaryModule,
+    ConfigModule,
   ],
   providers: [
     UsersService,
-    JwtAuthGuard,
   ],
   controllers: [UsersController],
   exports: [UsersService],

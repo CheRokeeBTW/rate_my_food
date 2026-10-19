@@ -36,22 +36,23 @@ model RefreshToken {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  username  String   @unique
-  password  String
-  avatarUrl String?
-  followers Follow[] @relation("UserFollowers")
-  following Follow[] @relation("UserFollowing")
-  createdAt DateTime @default(now())
+  id             String   @id @default(uuid())
+  email          String   @unique
+  username       String   @unique
+  password       String
+  avatarUrl      String?
+  avatarPublicId String?
+  followers      Follow[] @relation("UserFollowers")
+  following      Follow[] @relation("UserFollowing")
+  createdAt      DateTime @default(now())
 
   role UserRole @default(USER)
 
-  posts         Post[]
-  submissions   PostSubmission[]
-  ratings       Rating[]
-  refreshTokens RefreshToken[]
-  postViews     PostView[]     @relation("UserPostViews")
+  posts          Post[]
+  submissions    PostSubmission[]
+  ratings        Rating[]
+  refreshTokens  RefreshToken[]
+  postViews      PostView[]     @relation("UserPostViews")
 }
 
 model Follow{

@@ -10,6 +10,8 @@ describe('UsersController', () => {
     getProfile: jest.fn(),
     getUserById: jest.fn(),
     updateUsername: jest.fn(),
+    updateAvatar: jest.fn(),
+    deleteAvatar: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -63,6 +65,53 @@ describe('UsersController', () => {
       );
     });
   });
+
+  describe('updateAvatar', () => {
+  it('should update the authenticated user avatar', async () => {
+    const req = {
+      user: { sub: 'user-1' },
+    };
+
+    const dto = {
+      newAvatar: 'https://res.cloudinary.com/demo/image/upload/new.jpg',
+      publicId: 'avatars/new',
+    };
+
+    const updatedUser = {
+      id: 'user-1',
+      username: 'testuser',
+      avatarUrl: dto.newAvatar,
+    };
+
+    usersMock.updateAvatar.mockResolvedValue(updatedUser);
+
+    const result = await controller.updateAvatar(req as any, dto);
+
+    expect(result).toEqual(updatedUser);
+    expect(usersMock.updateAvatar).toHaveBeenCalledWith('user-1', dto);
+  });
+});
+
+describe('removeAvatar', () => {
+  it('should remove the authenticated user avatar', async () => {
+    const req = {
+      user: { sub: 'user-1' },
+    };
+
+    const updatedUser = {
+      id: 'user-1',
+      username: 'testuser',
+      avatarUrl: null,
+    };
+
+    usersMock.deleteAvatar.mockResolvedValue(updatedUser);
+
+    const result = await controller.removeAvatar(req as any);
+
+    expect(result).toEqual(updatedUser);
+    expect(usersMock.deleteAvatar).toHaveBeenCalledWith('user-1');
+  });
+});
 
   describe('getUserId', () => {
     it('should return a user by id', async () => {

@@ -5,4 +5,8 @@ export class UpdateAvatarDto {
     @IsNotEmpty()
     @IsUrl()
     readonly newAvatar!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    readonly publicId!: string;
 }

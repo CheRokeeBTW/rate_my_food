@@ -83,7 +83,7 @@ export class ModerationService {
         throw new BadRequestException('Submission has already been reviewed');
       }
 
-       await this.cloudinary.deleteImage(submission.publicId);
+      await this.cloudinary.deleteImage(submission.publicId);
 
       return tx.postSubmission.update({
         where: {

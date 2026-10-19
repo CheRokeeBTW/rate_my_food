@@ -1,6 +1,5 @@
-import { Controller, Get, Param, Post, Body, UseGuards, Req, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, UseGuards, Req, Patch, Delete, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guards';
 import type { Request } from 'express';
 import { UpdateUsernameDto } from './dto/update-username.dto';
@@ -33,24 +32,36 @@ export class UsersController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Patch('/me/avatar')
+    @Patch('me/avatar')
     updateAvatar(
         @Req() req: Request,
-        @Body() UpdateAvatarDto: UpdateAvatarDto,
+        @Body() updateAvatarDto: UpdateAvatarDto,
     ) {
-        const userId = req.user!.sub;
+        const userId = req.user?.sub;
 
-        return this.usersService.updateAvatar(userId, UpdateAvatarDto);
+        if (!userId) {
+            throw new UnauthorizedException('User not found');
+        };
+
+        return this.usersService.updateAvatar(userId, updateAvatarDto);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete('me/avatar')
+    removeAvatar(
+        @Req() req: Request,
+    ) {
+        const userId = req.user?.sub;
+
+        if (!userId) {
+            throw new UnauthorizedException('User not found');
+        };
+
+        return this.usersService.deleteAvatar(userId)
     }
 
     @Get(':id')
     getUserId(@Param('id') id: string) {
         return this.usersService.getUserById(id);
     }
-
-
-    // @Post()
-    // createuser(@Body() dto: CreateUserDto) {
-    //     return this.usersService.createUser(dto);
-    // }
 }
