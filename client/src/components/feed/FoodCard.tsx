@@ -6,6 +6,7 @@ import { Post } from "@/app/helper/types";
 import { motion, useMotionValue, useTransform, animate } from "motion/react";
 import { ChevronLeft, ChevronRight, Bookmark, Share2 } from "lucide-react";
 import { followUser, unfollowUser } from "@/app/services/follow.service";
+import UserAvatar from "../avatar/Avatar";
 import AverageRating from "./AverageRating";
 
 type FoodCardProps = {
@@ -149,7 +150,11 @@ export default function FoodCard({
         <aside className="flex min-h-[520px] flex-col rounded-[26px] border border-white/10 bg-[#1a1b17]/95 p-5 backdrop-blur-xl sm:h-[min(72svh,680px)] sm:p-7">
           <div className="hidden items-center gap-3 sm:flex">
             <div className="grid size-11 shrink-0 place-items-center rounded-full border border-white/10 bg-[#c79775] text-xs font-bold text-white">
-              {post.author.username.charAt(0).toUpperCase()}
+              <UserAvatar
+                username={post.author.username}
+                avatarUrl={post.author.avatarUrl}
+                size={36}
+              />
             </div>
 
             <div className="min-w-0 flex-1">

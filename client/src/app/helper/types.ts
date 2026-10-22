@@ -1,6 +1,7 @@
 type AuthorT = {
     id: string;
     username: string;
+    avatarUrl: string | null;
 }
 
 export type Post = {

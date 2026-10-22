@@ -1,170 +1,296 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useRef } from "react";
 import { getUserProfile, updateUsername } from "@/app/services/user.service";
 import Image from "next/image";
 import { Post } from "../helper/types";
-import AverageRating from "@/components/feed/AverageRating";
-import editImg from '../../../public/modify-icon.svg';
+import UserAvatar from "@/components/avatar/Avatar";
+import { Pencil, Camera, ArrowLeft, Grid3X3, Check, X } from "lucide-react";
 
-export default function Profile () {
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [username, setUsername] = useState<string>(""); 
-    const [newUsername, setNewUsername] = useState<string>("");
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isUsernameLoading, startTransition] = useTransition();
-    const [ischangingName, setIsChangingName] = useState<boolean>(false);
-    const postsWithRating = posts.map(post => post.averageRating).filter(rating => rating !== null);
+export default function Profile() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [username, setUsername] = useState<string>("");
+  const [newUsername, setNewUsername] = useState<string>("");
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isUsernameLoading, startTransition] = useTransition();
+  const [isChangingName, setIsChangingName] = useState<boolean>(false);
 
-    const total = postsWithRating.reduce((sum, postRating) => {
-        return sum + postRating
-    }, 0);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
-    const average = postsWithRating.length > 0 ? total / postsWithRating.length : 0;
+  const postsWithRating = posts
+    .map((post) => post.averageRating)
+    .filter((rating): rating is number => rating !== null);
 
-    console.log(postsWithRating, "AVERAGE");
+  const total = postsWithRating.reduce((sum, rating) => sum + rating, 0);
+  const average = postsWithRating.length > 0 ? total / postsWithRating.length : 0;
 
-    useEffect(() => {
-        getPosts();
-    }, []);
+  useEffect(() => {
+    getPosts();
+  }, []);
 
-    const getPosts = async () => {
-        try{
-            setIsLoading(true);
-
-            const data = await getUserProfile();
-
-            console.log(data, "DATA");
-
-            setPosts(data.posts);
-            setUsername(data.username);
-        } catch (err){
-            console.error("Failed to fetch posts", err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const openUpdateUsername = () => {
-        setNewUsername(username);
-        setIsChangingName(true);
+  const getPosts = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getUserProfile();
+      setPosts(data.posts);
+      setUsername(data.username);
+      setAvatar(data.avatarUrl);
+    } catch (err) {
+      console.error("Failed to fetch posts", err);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const handleUpdateUsername = () => {
-            startTransition(async () => {
-                try {
-                    await updateUsername(newUsername);
+  const openUpdateUsername = () => {
+    setNewUsername(username);
+    setIsChangingName(true);
+  };
 
-                    setUsername(newUsername);
-                    setIsChangingName(false);
-                } catch (err) {
-                    console.error("Failed to update username", err);
-                }
-            })
-    };
-    
-    console.log(posts, "ONLY POSTS");
+  const handleUpdateUsername = () => {
+    startTransition(async () => {
+      try {
+        await updateUsername(newUsername);
+        setUsername(newUsername);
+        setIsChangingName(false);
+      } catch (err) {
+        console.error("Failed to update username", err);
+      }
+    });
+  };
 
-    if(isLoading) return(
-        <div className="flex justify-center items-center h-screen">
-            <div className="w-8 h-8 border-4 border-gray-300 border-t-white rounded-full animate-spin"></div>
-        </div>
-    )
+  const initials = username
+    ? username
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "?";
 
+  if (isLoading) {
     return (
-        <div className="min-h-screen px-6 md:px-12 lg:px-20 pt-8 pb-16">
-            <div className="flex flex-col items-center mb-12">
-                {!isUsernameLoading ? (
-                    <div className="flex items-center gap-3 mb-5">
-                        {ischangingName ? (
-                            <div className="flex items-center gap-2">
-                                <input
-                                    className="w-48 px-3 py-1.5 text-2xl font-bold outline-none border-b text-center"
-                                    autoFocus
-                                    type="text"
-                                    value={newUsername}
-                                    onChange={(e) => setNewUsername(e.target.value)}
-                                />
-                                    <button
-                                        className="min-w-8 h-8 rounded-full flex items-center justify-center bg-blue-700 hover:bg-blue-600 transition-colors hover:cursor-pointer"
-                                        onClick={handleUpdateUsername}
-                                    >
-                                        ✓
-                                    </button>
-                                    <button
-                                        className="min-w-8 h-8 rounded-full flex items-center justify-center bg-red-700 hover:bg-red-600 transition-colors hover:cursor-pointer"
-                                        onClick={() => setIsChangingName(false)}
-                                    >
-                                        ✕
-                                    </button>
-                            </div>
-                        ) : (
-                            <>
-                                <p className="text-3xl font-bold tracking-tight">
-                                    {username}
-                                </p>
-                                <button 
-                                    className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-zinc-800 transition-colors duration-200 hover:cursor-pointer"
-                                    onClick={openUpdateUsername}
-                                >
-                                    <Image
-                                        src={editImg}
-                                        alt="Edit profile"
-                                        width={16}
-                                        height={16}
-                                    />
-                                </button>
-                            </>
-                        )}
-                    </div>
-                ) : (
-                    'Updating...'
-                )}
-                <div className="flex items-center bg-zinc-900/70 border border-zinc-800 rounded-2xl px-8 py-4 shadow-sm">
-                    <div className="flex flex-col items-center min-w-24">
-                        <span className="text-xl font-bold">
-                            {posts.length}
-                        </span>
-                        <span className="text-sm text-zinc-500">
-                            Posts
-                        </span>
-                    </div>
-                    <div className="h-8 w-px bg-zinc-700 mx-6" />
-                    <div className="flex flex-col items-center min-w-24">
-                        <span className="text-xl font-bold">
-                            {average.toFixed(1)}
-                        </span>
-                        <span className="text-sm text-zinc-500">
-                            Avg. rating
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {posts.map((post) => (
-                    <div
-                        key={post.id}
-                        className="group overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-700 hover:shadow-xl"
-                    >
-                        <div className="relative aspect-square overflow-hidden">
-                            <Image
-                                alt={post.title}
-                                src={post.imageUrl}
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-105"
+      <div className="flex min-h-[100svh] items-center justify-center bg-[#11120f]">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/20 border-t-[#ff6542]" />
+      </div>
+    );
+  }
+
+  return (
+    <main className="profile-page relative min-h-[100svh] bg-[#11120f] text-[#f7f3ea]">
+      {/* Background effects */}
+      <div className="pointer-events-none fixed inset-0 profile-glow" />
+      <div className="pointer-events-none fixed inset-0 noise" />
+
+      {/* Header */}
+      {/* <header className="relative z-30 flex h-[72px] items-center justify-between border-b border-white/10 px-5 sm:px-8">
+        <a href="/" className="flex items-center gap-2.5" aria-label="Crumb home">
+          <span className="grid size-8 -rotate-6 place-items-center rounded-[10px] bg-[#ff6542] text-sm font-black text-white shadow-[2px_2px_0_#f6e8c9]">
+            C
+          </span>
+          <span className="font-display text-xl font-bold tracking-[-0.04em]">
+            crumb.
+          </span>
+        </a>
+
+        <a
+          href="/"
+          className="flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-white/65 transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+        >
+          <ArrowLeft size={14} />
+          Back to feed
+        </a>
+      </header> */}
+
+      <section className="relative z-10 mx-auto max-w-[1120px] px-5 pb-16 pt-12 sm:px-8 sm:pt-16">
+        <div className="mx-auto flex max-w-[760px] flex-col items-center text-center">
+          <div className="group relative">
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              // onChange={(e) => handleAvatarChange(e.target.files?.[0])}
+            />
+
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              className="avatar-editor relative size-28 overflow-hidden rounded-full border border-white/15 bg-[#c79775] shadow-[0_20px_55px_rgba(0,0,0,.35)] sm:size-32"
+              aria-label="Update profile photo"
+            >
+                            <UserAvatar
+                              username={username}
+                              avatarUrl={avatar}
+                              size="100%"
+                              className="h-full w-full"
                             />
-                        </div>
-                        <div className="p-4 flex flex-col items-center">
-                            <p className="text-lg font-semibold tracking-tight truncate">
-                                {post.title}
-                            </p>
-                            <div className="mt-2 flex items-center justify-between">
-                                <AverageRating rating={post.averageRating} />
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+              {/* Hover overlay */}
+              <span className="absolute inset-0 grid place-items-center bg-black/55 opacity-0 transition group-hover:opacity-100">
+                <span className="flex flex-col items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em]">
+                  <Camera size={20} />
+                  Change
+                </span>
+              </span>
+            </button>
+          </div>
+
+          <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">
+            Click photo to update
+          </p>
+
+          {/* Name */}
+        <div className="mt-7 w-full">
+        <div className="profile-name-row relative flex min-h-[56px] items-center justify-center">
+            {isChangingName ? (
+            <>
+                <label htmlFor="profile-name" className="sr-only">
+                Your name
+                </label>
+
+                <input
+                id="profile-name"
+                autoFocus
+                value={newUsername}
+                maxLength={40}
+                onChange={(e) => setNewUsername(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") handleUpdateUsername();
+                    if (e.key === "Escape") setIsChangingName(false);
+                }}
+                className="profile-name-input block w-full min-w-0 bg-transparent text-center font-display text-[2.5rem] leading-none font-semibold tracking-[-0.045em] text-[#ff795c] outline-none transition placeholder:text-white/30 sm:text-[3.4rem]"
+                aria-describedby="name-hint"
+                />
+
+                <div
+                className="profile-name-actions absolute right-0 flex items-center gap-2"
+                aria-label="Name editing actions"
+                >
+                <button
+                    type="button"
+                    onClick={handleUpdateUsername}
+                    disabled={isUsernameLoading || !newUsername.trim()}
+                    className="grid size-10 place-items-center rounded-full bg-[#ff6542] text-white transition hover:bg-[#ff795c] disabled:cursor-not-allowed disabled:opacity-35"
+                    aria-label="Save name"
+                >
+                    <Check size={20} />
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => setIsChangingName(false)}
+                    className="grid size-10 place-items-center rounded-full border border-white/15 text-white/55 transition hover:border-white/30 hover:bg-white/[0.06] hover:text-white"
+                    aria-label="Cancel name change"
+                >
+                    <X size={20} />
+                </button>
+                </div>
+            </>
+            ) : (
+            <button
+                type="button"
+                onClick={openUpdateUsername}
+                className="group relative mx-auto block max-w-full"
+            >
+                <h1 className="break-words font-display text-[2.5rem] leading-none font-semibold tracking-[-0.045em] text-[#f7f3ea] transition group-hover:text-[#ff795c] sm:text-[3.4rem]">
+                {username}
+                </h1>
+
+                <span className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 transition group-hover:opacity-100">
+                <Pencil size={16} className="text-white/50" />
+                </span>
+            </button>
+            )}
         </div>
-    )
-} 
+
+        <p id="name-hint" className="mt-3 text-xs text-white/35">
+            {isChangingName ? "Press Enter to save" : "Click your name to edit it"}
+        </p>
+        </div>
+
+          {/* Handle */}
+          <p className="mt-4 text-sm font-medium text-white/50">
+            @{username.toLowerCase().replace(/\s+/g, ".")}
+          </p>
+
+          {/* Stats */}
+          <div className="mt-8 flex items-stretch overflow-hidden rounded-2xl border border-white/10 bg-white/[0.045] shadow-[0_18px_55px_rgba(0,0,0,.18)]">
+            <div className="min-w-32 px-8 py-4">
+              <p className="font-display text-2xl font-semibold">{posts.length}</p>
+              <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-white/35">
+                Dishes
+              </p>
+            </div>
+            <div className="my-4 w-px bg-white/10" />
+            <div className="min-w-32 px-8 py-4">
+              <p className="font-display text-2xl font-semibold text-[#ff795c]">
+                {average.toFixed(1)}
+              </p>
+              <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-white/35">
+                Avg. rating
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Collection header */}
+        <div className="mt-16 flex items-end justify-between border-b border-white/10 pb-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#ff795c]">
+              Your collection
+            </p>
+            <h2 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em]">
+              Dishes you’ve shared
+            </h2>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-semibold text-white/40">
+            <Grid3X3 size={14} />
+            {posts.length} posts
+          </div>
+        </div>
+
+        {/* Posts grid */}
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {posts.map((post) => (
+            <div
+              key={post.id}
+              className="profile-card group overflow-hidden rounded-[22px] border border-white/10 bg-[#1a1b17] text-left transition hover:-translate-y-1 hover:border-white/20"
+            >
+              <div className="relative aspect-[4/5] overflow-hidden">
+                <Image
+                  src={post.imageUrl}
+                  alt={post.title}
+                  fill
+                  className="object-cover transition duration-500 group-hover:scale-[1.04]"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
+
+                <div className="absolute bottom-4 left-4 right-4">
+                  <p className="line-clamp-2 font-display text-xl font-semibold leading-tight">
+                    {post.title}
+                  </p>
+                </div>
+
+                {post.averageRating !== null && (
+                  <span className="absolute right-3 top-3 rounded-full bg-black/60 px-2.5 py-1.5 font-display text-sm font-semibold text-[#ff795c] backdrop-blur">
+                    {post.averageRating.toFixed(1)}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {posts.length === 0 && (
+          <div className="mt-20 text-center text-white/40">
+            <p className="text-lg">No dishes shared yet</p>
+            <p className="mt-2 text-sm">Your collection will appear here</p>
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
