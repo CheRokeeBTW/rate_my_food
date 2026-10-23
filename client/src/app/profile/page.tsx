@@ -5,6 +5,7 @@ import { getUserProfile, updateUsername } from "@/app/services/user.service";
 import Image from "next/image";
 import { Post } from "../helper/types";
 import UserAvatar from "@/components/avatar/Avatar";
+import AvatarCropModal from "@/components/avatar/AvatarCropModal";
 import { Pencil, Camera, ArrowLeft, Grid3X3, Check, X } from "lucide-react";
 
 export default function Profile() {
@@ -15,6 +16,8 @@ export default function Profile() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isUsernameLoading, startTransition] = useTransition();
   const [isChangingName, setIsChangingName] = useState<boolean>(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,6 +31,29 @@ export default function Profile() {
   useEffect(() => {
     getPosts();
   }, []);
+
+  const handleAvatarFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+
+    event.target.value = "";
+
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setAvatarError("Choose a JPG, PNG, or WEBP image.");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setAvatarError("Image must be smaller than 10 MB.");
+      return;
+    }
+
+    setAvatarError(null);
+    setAvatarFile(file);
+  };
 
   const getPosts = async () => {
     try {
@@ -111,7 +137,7 @@ export default function Profile() {
               type="file"
               accept="image/jpeg,image/png,image/webp"
               className="sr-only"
-              // onChange={(e) => handleAvatarChange(e.target.files?.[0])}
+              onChange={handleAvatarFileChange}
             />
 
             <button
@@ -215,11 +241,11 @@ export default function Profile() {
           </p>
 
           {/* Stats */}
-          <div className="mt-8 flex items-stretch overflow-hidden rounded-2xl border border-white/10 bg-white/[0.045] shadow-[0_18px_55px_rgba(0,0,0,.18)]">
+          <div className="mt-8 flex items-stretch overflow-hidden rounded-2xl border border-white/10 bg-white/[0.045]">
             <div className="min-w-32 px-8 py-4">
               <p className="font-display text-2xl font-semibold">{posts.length}</p>
               <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-white/35">
-                Dishes
+                Posts
               </p>
             </div>
             <div className="my-4 w-px bg-white/10" />
@@ -241,7 +267,7 @@ export default function Profile() {
               Your collection
             </p>
             <h2 className="mt-2 font-display text-2xl font-semibold tracking-[-0.03em]">
-              Dishes you’ve shared
+              Posts you’ve shared
             </h2>
           </div>
           <div className="flex items-center gap-2 text-xs font-semibold text-white/40">
@@ -291,6 +317,16 @@ export default function Profile() {
           </div>
         )}
       </section>
+      {avatarFile && (
+        <AvatarCropModal
+          file={avatarFile}
+          onClose={() => setAvatarFile(null)}
+          onUploaded={(url) => {
+            setAvatar(url);
+            setAvatarFile(null);
+          }}
+        />
+      )}
     </main>
   );
 }

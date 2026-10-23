@@ -31,4 +31,22 @@ export async function updateUsername(newUsername: string) {
       data.message || 'Failed to update username'
     );
   }
-}
+};
+
+  export async function updateAvatar(newAvatar: string, publicId: string){
+    const response = await apiFetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/users/me/avatar`, {
+        method: "PATCH",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newAvatar, publicId })
+      }
+    )
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(
+        data.message || 'Failed to update avatar'
+      );
+    }
+  }
