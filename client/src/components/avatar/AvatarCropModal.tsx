@@ -76,7 +76,7 @@ export default function AvatarCropModal({
       onUploaded(result.secure_url);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Avatar upload failed.",
+        err instanceof Error ? err.message : "Avatar upload failed",
       );
     } finally {
       setIsUploading(false);

@@ -4,6 +4,7 @@ import { useState, useEffect, useTransition, useRef } from "react";
 import { getUserProfile, updateUsername } from "@/app/services/user.service";
 import Image from "next/image";
 import { Post } from "../helper/types";
+import { getUsernameError } from "../helper/errorHandler";
 import UserAvatar from "@/components/avatar/Avatar";
 import AvatarCropModal from "@/components/avatar/AvatarCropModal";
 import { Pencil, Camera, ArrowLeft, Grid3X3, Check, X } from "lucide-react";
@@ -18,6 +19,7 @@ export default function Profile() {
   const [isChangingName, setIsChangingName] = useState<boolean>(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [usernameError, setUsernameError] = useState <string | null>(null);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
@@ -71,8 +73,14 @@ export default function Profile() {
 
   const openUpdateUsername = () => {
     setNewUsername(username);
+    setUsernameError(null);
     setIsChangingName(true);
   };
+
+  const closeUpdateUsername = () => {
+    setUsernameError(null);
+    setIsChangingName(false);
+  }
 
   const handleUpdateUsername = () => {
     startTransition(async () => {
@@ -81,19 +89,10 @@ export default function Profile() {
         setUsername(newUsername);
         setIsChangingName(false);
       } catch (err) {
-        console.error("Failed to update username", err);
+          err instanceof Error ? setUsernameError(getUsernameError(err.message)) : setUsernameError("Failed to update username. Please try again");
       }
     });
   };
-
-  const initials = username
-    ? username
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
-    : "?";
 
   if (isLoading) {
     return (
@@ -105,7 +104,6 @@ export default function Profile() {
 
   return (
     <main className="profile-page relative min-h-[100svh] bg-[#11120f] text-[#f7f3ea]">
-      {/* Background effects */}
       <div className="pointer-events-none fixed inset-0 profile-glow" />
       <div className="pointer-events-none fixed inset-0 noise" />
 
@@ -146,13 +144,13 @@ export default function Profile() {
               className="avatar-editor relative size-28 overflow-hidden rounded-full border border-white/15 bg-[#c79775] shadow-[0_20px_55px_rgba(0,0,0,.35)] sm:size-32"
               aria-label="Update profile photo"
             >
-                            <UserAvatar
-                              username={username}
-                              avatarUrl={avatar}
-                              size="100%"
-                              className="h-full w-full"
-                            />
-              {/* Hover overlay */}
+              <UserAvatar
+                username={username}
+                avatarUrl={avatar}
+                size="100%"
+                className="h-full w-full"
+              />
+
               <span className="absolute inset-0 grid place-items-center bg-black/55 opacity-0 transition group-hover:opacity-100">
                 <span className="flex flex-col items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.12em]">
                   <Camera size={20} />
@@ -166,32 +164,33 @@ export default function Profile() {
             Click photo to update
           </p>
 
-          {/* Name */}
         <div className="mt-7 w-full">
-        <div className="profile-name-row relative flex min-h-[56px] items-center justify-center">
-            {isChangingName ? (
+        
+        <div className="profile-name-row grid min-h-[56px] w-full grid-cols-[1fr_auto_1fr] items-center gap-2">
+          {isChangingName ? (
             <>
+            <div aria-hidden="true" className="w-30" />
                 <label htmlFor="profile-name" className="sr-only">
-                Your name
+                  Your name
                 </label>
 
                 <input
-                id="profile-name"
-                autoFocus
-                value={newUsername}
-                maxLength={40}
-                onChange={(e) => setNewUsername(e.target.value)}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter") handleUpdateUsername();
-                    if (e.key === "Escape") setIsChangingName(false);
-                }}
-                className="profile-name-input block w-full min-w-0 bg-transparent text-center font-display text-[2.5rem] leading-none font-semibold tracking-[-0.045em] text-[#ff795c] outline-none transition placeholder:text-white/30 sm:text-[3.4rem]"
-                aria-describedby="name-hint"
+                  id="profile-name"
+                  autoFocus
+                  value={newUsername}
+                  maxLength={30}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  onKeyDown={(e) => {
+                      if (e.key === "Enter") handleUpdateUsername();
+                      if (e.key === "Escape") setIsChangingName(false);
+                  }}
+                  className="flex flex-1 profile-name-input w-full min-w-0 bg-transparent text-center font-display text-[2.5rem] leading-none font-semibold tracking-[-0.045em] text-[#ff795c] outline-none transition placeholder:text-white/30 sm:text-[3.4rem]"
+                  aria-describedby="name-hint"
                 />
 
                 <div
-                className="profile-name-actions absolute right-0 flex items-center gap-2"
-                aria-label="Name editing actions"
+                  className="ml-8 flex items-center gap-2"
+                  aria-label="Name editing actions"
                 >
                 <button
                     type="button"
@@ -205,11 +204,11 @@ export default function Profile() {
 
                 <button
                     type="button"
-                    onClick={() => setIsChangingName(false)}
+                    onClick={closeUpdateUsername}
                     className="grid size-10 place-items-center rounded-full border border-white/15 text-white/55 transition hover:border-white/30 hover:bg-white/[0.06] hover:text-white"
                     aria-label="Cancel name change"
                 >
-                    <X size={20} />
+                  <X size={20} />
                 </button>
                 </div>
             </>
@@ -217,10 +216,10 @@ export default function Profile() {
             <button
                 type="button"
                 onClick={openUpdateUsername}
-                className="group relative mx-auto block max-w-full"
+                className="group relative col-span-3 mx-auto block max-w-full"
             >
                 <h1 className="break-words font-display text-[2.5rem] leading-none font-semibold tracking-[-0.045em] text-[#f7f3ea] transition group-hover:text-[#ff795c] sm:text-[3.4rem]">
-                {username}
+                  {username}
                 </h1>
 
                 <span className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 transition group-hover:opacity-100">
@@ -229,6 +228,14 @@ export default function Profile() {
             </button>
             )}
         </div>
+        {usernameError && (
+          <p
+            role="alert"
+            className="mt-3 text-center text-sm text-red-400"
+          >
+            {usernameError}
+          </p>
+        )}
 
         <p id="name-hint" className="mt-3 text-xs text-white/35">
             {isChangingName ? "Press Enter to save" : "Click your name to edit it"}
