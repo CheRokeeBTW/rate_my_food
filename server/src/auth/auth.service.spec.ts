@@ -63,8 +63,9 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
+
   describe('registerUser', () => {
-    it('should register a new user', async () => {
+    it('should register a new user and create an authenticated session', async () => {
       const dto = {
         email: 'test@test.com',
         username: 'testuser',
@@ -84,27 +85,44 @@ describe('AuthService', () => {
 
       usersMock.createUser.mockResolvedValue(createdUser);
 
+      jwtMock.sign.mockReturnValue('access-token');
+
+      sessionsMock.createSession.mockResolvedValue({
+        id: 'session-1',
+      });
+
       const result = await service.registerUser(dto);
 
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         id: 'user-1',
         email: dto.email,
         username: dto.username,
       });
 
-      expect(usersMock.getUserByEmail).toHaveBeenCalledWith(
-        dto.email,
-      );
+      expect(result).not.toHaveProperty('password');
 
-      expect(bcrypt.hash).toHaveBeenCalledWith(
-        dto.password,
-        10,
-      );
+      expect(result.accessToken).toBe('access-token');
+      expect(result.refreshToken).toEqual(expect.any(String));
+      expect(result.refreshToken).toHaveLength(128);
+
+      expect(usersMock.getUserByEmail).toHaveBeenCalledWith(dto.email);
+
+      expect(bcrypt.hash).toHaveBeenCalledWith(dto.password, 10);
 
       expect(usersMock.createUser).toHaveBeenCalledWith({
         email: dto.email,
         username: dto.username,
         password: 'hashed-password',
+      });
+
+      expect(jwtMock.sign).toHaveBeenCalledWith({
+        username: 'testuser',
+        sub: 'user-1',
+      });
+
+      expect(sessionsMock.createSession).toHaveBeenCalledWith({
+        refreshToken: result.refreshToken,
+        userId: 'user-1',
       });
     });
 
@@ -128,8 +146,11 @@ describe('AuthService', () => {
 
       expect(usersMock.createUser).not.toHaveBeenCalled();
       expect(bcrypt.hash).not.toHaveBeenCalled();
+      expect(jwtMock.sign).not.toHaveBeenCalled();
+      expect(sessionsMock.createSession).not.toHaveBeenCalled();
     });
   });
+
 
   describe('loginUser', () => {
     it('should login with valid credentials', async () => {

@@ -32,13 +32,21 @@ export class AuthService {
 
         const { password, ...safeUser } = user;
 
-        return safeUser
+        const payload = { username: user.username, sub: user.id };
+
+        const accessToken = this.jwtService.sign(payload);
+
+        const refreshToken = randomBytes(64).toString('hex');
+
+        await this.sessionService.createSession({
+            refreshToken, 
+            userId: user.id
+        })
+
+        return { ...safeUser, accessToken, refreshToken }
     }
 
-    async loginUser({
-        email,
-        password
-    }) {
+    async loginUser( {email, password} : {email: string, password: string} ) {
         const user = await this.usersService.getUserByEmail(email)
 
         if (!user) {

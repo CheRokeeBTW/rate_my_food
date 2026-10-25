@@ -44,31 +44,50 @@ describe('AuthController', () => {
     expect(controller).toBeDefined();
   });
 
+
   describe('registerUser', () => {
-    it('should call AuthService.registerUser', async () => {
+    it('should register a user and set the refresh token cookie', async () => {
       const dto = {
         email: 'test@test.com',
         username: 'testuser',
         password: 'password123',
       };
 
-      const resultUser = {
-        id: 'user-1',
-        email: dto.email,
-        username: dto.username,
-      };
+      authServiceMock.registerUser.mockResolvedValue({
+        safeUser: {
+          id: 'user-1',
+          email: dto.email,
+          username: dto.username,
+        },
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+      });
 
-      authServiceMock.registerUser.mockResolvedValue(resultUser);
+      const response = {
+        cookie: jest.fn(),
+      } as any;
 
-      const result = await controller.registerUser(dto);
+      const result = await controller.registerUser(dto, response);
 
-      expect(result).toEqual(resultUser);
+      expect(result).toEqual({
+        accessToken: 'access-token',
+      });
 
-      expect(authServiceMock.registerUser).toHaveBeenCalledWith(
-        dto,
+      expect(authServiceMock.registerUser).toHaveBeenCalledWith(dto);
+
+      expect(response.cookie).toHaveBeenCalledWith(
+        'refresh_token',
+        'refresh-token',
+        {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'lax',
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+        },
       );
     });
   });
+
 
   describe('login', () => {
     it('should login and set refresh token cookie', async () => {

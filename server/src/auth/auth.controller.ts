@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Res, Req, UnauthorizedException, UseGuards, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterAuthDto } from './dto/register.dto';
-import type { Response, Request } from 'express';
+import type { Response, Request, response } from 'express';
 import { NotFoundException } from '@nestjs/common';
 import { JwtAuthGuard } from './guards/jwt-auth.guards';
 
@@ -13,8 +13,24 @@ export class AuthController {
     ) {}
 
     @Post('register')
-    registerUser(@Body() dto: RegisterAuthDto) {
-        return this.authService.registerUser(dto);
+    async registerUser(
+        @Body() dto: RegisterAuthDto,
+        @Res({ passthrough: true }) response: Response,
+    ) {
+        const { accessToken, refreshToken } = await this.authService.registerUser(dto);
+
+        const cookieOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax' as const,
+        };
+
+        response.cookie('refresh_token', refreshToken, {
+            ...cookieOptions,
+            maxAge: 1000 * 60 * 60 * 24 * 7, 
+        });
+
+        return { accessToken };
     }
 
     @Post('login')
@@ -38,9 +54,7 @@ export class AuthController {
             maxAge: 1000 * 60 * 60 * 24 * 7, 
         });
 
-        return {
-            accessToken,
-        };
+        return { accessToken };
     }
 
     @Post('refresh')
