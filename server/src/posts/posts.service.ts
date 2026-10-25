@@ -43,6 +43,9 @@ async getFeed(
 
   if (visitor.userId) {
     where = {
+      authorId: {
+        not: visitor.userId,
+      },
       views: {
         none: {
           userId: visitor.userId,
@@ -51,6 +54,9 @@ async getFeed(
     };
   } else if (visitor.visitorId) {
     where = {
+      authorId: {
+        not: visitor.visitorId,
+      },
       views: {
         none: {
           visitorId: visitor.visitorId,
