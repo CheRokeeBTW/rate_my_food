@@ -187,6 +187,9 @@ describe('PostsService', () => {
 
       expect(prismaMock.post.findMany).toHaveBeenCalledWith({
         where: {
+          authorId: {
+            not: 'viewer-1',
+          },
           views: {
             none: {
               userId: 'viewer-1',
@@ -269,6 +272,9 @@ describe('PostsService', () => {
 
       expect(prismaMock.post.findMany).toHaveBeenCalledWith({
         where: {
+          authorId: {
+            not: 'viewer-1',
+          },
           views: {
             none: {
               userId: 'viewer-1',
@@ -307,6 +313,9 @@ describe('PostsService', () => {
       expect(prismaMock.post.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
+            authorId: {
+              not: 'viewer-1',
+            },
             views: {
               none: {
                 userId: 'viewer-1',
@@ -320,6 +329,30 @@ describe('PostsService', () => {
     });
   });
 
+  it('should exclude the authenticated user’s own posts', async () => {
+    prismaMock.post.findMany.mockResolvedValue([]);
+
+    prismaMock.follow.findMany.mockResolvedValue([]);
+
+    await service.getFeed(undefined, {
+      userId: 'viewer-1',
+    });
+
+    expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          authorId: {
+            not: 'viewer-1',
+          },
+          views: {
+            none: {
+              userId: 'viewer-1',
+            },
+          },
+        },
+      }),
+    );
+  });
 
   describe('markPostViewed', () => {
     it('should throw NotFoundException when post does not exist', async () => {
