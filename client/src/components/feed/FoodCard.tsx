@@ -39,14 +39,14 @@ export default function FoodCard({
     setIsFollowing(post.isFollowing);
   }, [post.id, post.isFollowing]);
 
-  useEffect(() => {
-    x.set(-40);
+  // useEffect(() => {
+  //   x.set(-40);
 
-    animate(x, 0, {
-      duration: 0.25,
-      ease: "easeOut",
-    });
-  }, [post.id, x]);
+  //   animate(x, 0, {
+  //     duration: 0.25,
+  //     ease: "easeOut",
+  //   });
+  // }, [post.id, x]);
 
   const handleToggleFollow = async (followingId: string) => {
     if(isLoading) return;
@@ -98,29 +98,8 @@ export default function FoodCard({
   };
 
   return (
-    <motion.div
-      className="relative mx-auto w-full max-w-[1200px]"
-      style={{ x, rotate, opacity, touchAction: "pan-y" }}
-      drag="x"
-      dragConstraints={{ left: -1000, right: 0 }}
-      dragElastic={0}
-      onDragEnd={(_, info) => {
-        if (info.offset.x < -120) {
-          animate(x, -800, {
-            duration: 0.3,
-            ease: "easeOut",
-            onComplete: onSwipeLeft,
-          });
-        } else {
-          animate(x, 0, {
-            duration: 0.2,
-            ease: "easeOut",
-          });
-        }
-      }}
-    >
+    <div className="relative mx-auto w-full max-w-[1200px]">
       <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-[1.15fr_0.85fr]">
-        {/* LEFT: Food image */}
         <div className="relative min-h-[380px] overflow-hidden rounded-[26px] border border-white/15 bg-[#25261f] sm:h-[min(72svh,680px)]">
           <Image
             src={post.imageUrl}
@@ -272,6 +251,6 @@ export default function FoodCard({
       >
         <ChevronRight size={24} />
       </button>
-    </motion.div>
+    </div>
   );
 }
