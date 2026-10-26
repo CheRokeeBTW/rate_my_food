@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation";
 import { Inter } from "next/font/google";
 import { registerUser } from "@/app/services/auth.service";
+import { useTokenStore } from "@/stores/auth.stores";
 import { X } from "lucide-react";
 
 const inter = Inter({
@@ -38,6 +39,7 @@ export default function RegisterForm({ onClose, onSwitchToLogin } : RegisterForm
     const [errors, setErrors] = useState<Errors>(emptyErrors)
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [confirmPassword, setConfirmPassword] = useState<string>("");
+    const setAccessToken = useTokenStore(state => state.setAccessToken);
     const router = useRouter();
 
     const handleRegister = async () => {
@@ -96,6 +98,8 @@ export default function RegisterForm({ onClose, onSwitchToLogin } : RegisterForm
       );
 
       console.log("User registered:", data);
+
+      setAccessToken(data.accessToken);
 
       onClose();
 
@@ -215,9 +219,9 @@ export default function RegisterForm({ onClose, onSwitchToLogin } : RegisterForm
                             )}
                         </div>
                          {errors.server && (
-                        <p className="text-center text-sm text-red-500">
-                        {errors.server}
-                        </p>
+                            <p className="text-center text-sm text-red-500">
+                                {errors.server}
+                            </p>
                         )}
                         <div className="flex justify-center">
                         <button

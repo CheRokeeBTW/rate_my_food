@@ -131,10 +131,10 @@ export default function LoginForm({ onClose, onSwitchToRegister } : LoginFormPro
                             </p>
                             )}
                         </div>
-                         {errors.server && (
-                        <p className="text-center text-sm text-red-500">
-                        {errors.server}
-                        </p>
+                        {errors.server && (
+                            <p className="text-center text-sm text-red-500">
+                                {errors.server}
+                            </p>
                         )}
                         <div className="flex justify-center">
                         <button
