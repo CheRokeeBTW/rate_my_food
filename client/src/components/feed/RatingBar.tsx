@@ -3,12 +3,7 @@
 import { Star } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTokenStore } from "@/stores/auth.stores";
-
-type RatingProps = {
-    postId: string;
-    onRate: (value: number) => void;
-    onRequireAuth: () => void;
-};
+import { RatingProps } from "@/app/helper/types";
 
 export default function Rating({ postId, onRate, onRequireAuth } : RatingProps) {
     const [hovered, setHover] = useState<number | null>(null);

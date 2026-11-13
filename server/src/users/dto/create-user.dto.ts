@@ -9,7 +9,6 @@ export class CreateUserDto {
     @MaxLength(30)
     readonly username!: string;
 
-
     @IsString()
     @MinLength(8)
     @MaxLength(100)

@@ -11,10 +11,7 @@ import { useTokenStore } from '@/stores/auth.stores';
 import { useRouter } from 'next/navigation';
 import logoutImg from '../../../public/open-door-icon.svg';
 import { logoutUser } from '@/app/services/auth.service';
-
-type NavBarProps = {
-    onRequireAuth: () => void;
-}
+import { NavBarProps } from '@/app/helper/types';
 
 export default function NavBar({ onRequireAuth } : NavBarProps){
     const [uploadOpen, setUploadOpen] = useState<boolean>(false);

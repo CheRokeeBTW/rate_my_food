@@ -1,26 +1,5 @@
 import { apiFetch } from './token.service';
-
-export type CloudinaryUploadResponse = {
-  asset_id: string;
-  public_id: string;
-  version: number;
-  version_id: string;
-  signature: string;
-  width: number;
-  height: number;
-  format: string;
-  resource_type: string;
-  created_at: string;
-  bytes: number;
-  type: string;
-  url: string;
-  secure_url: string;
-  original_filename: string;
-};
-
-export type UploadPromise<T> = Promise<T> & {
-  abort: () => void;
-};
+import { CloudinaryUploadResponse, UploadPromise } from '../helper/types';
 
 export async function getCloudinarySignature() {
 

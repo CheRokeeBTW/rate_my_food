@@ -1,8 +1,5 @@
 import { Star } from "lucide-react";
-
-type AverageRatingProps = {
-    rating: number | null;
-};
+import { AverageRatingProps } from "@/app/helper/types";
 
 export default function AverageRating({ rating }: AverageRatingProps) {
     const stars = Array.from({ length: 10 }, (_, index) => index + 1);

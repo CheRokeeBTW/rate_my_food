@@ -1,33 +1,6 @@
 import { apiFetch } from "./token.service";
 import { Post } from "../helper/types";
-
-type CreatePostData = {
-  title: string;
-  tags: string[];
-  description: string | null;
-  imageUrl: string;
-};
-
-type createPostSubmission = CreatePostData & {
-  publicId: string;
-}
-
-// export type FeedPost = {
-//   id: string;
-//   title: string;
-//   tags: string[];
-//   imageUrl: string;
-//   createdAt: string;
-//   author: {
-//     id: string;
-//     username: string;
-//   };
-// };
-
-export type FeedResponse = {
-  items: Post[];
-  nextCursor: string | null;
-};
+import { CreatePostData, createPostSubmissionT, FeedResponse } from "../helper/types";
 
 export async function createPost({ title, tags, description, imageUrl } : CreatePostData) {
 
@@ -83,7 +56,7 @@ export async function markPostViewed(postId: string) {
   return response.json();
 }
 
-export async function createPostSubmission({ title, tags, description, imageUrl, publicId } : createPostSubmission){
+export async function createPostSubmission({ title, tags, description, imageUrl, publicId } : createPostSubmissionT){
   const response = await apiFetch(
     `${process.env.NEXT_PUBLIC_API_URL}/post-submissions`,
     {

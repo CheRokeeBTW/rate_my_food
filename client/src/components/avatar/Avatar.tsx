@@ -2,13 +2,7 @@
 "use client";
 
 import Image from "next/image";
-
-type UserAvatarProps = {
-  username: string;
-  avatarUrl?: string | null;
-  size?: number | string;
-  className?: string;
-};
+import { UserAvatarProps } from "@/app/helper/types";
 
 export default function UserAvatar({
   username,

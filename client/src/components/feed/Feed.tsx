@@ -7,14 +7,12 @@ import Rating from "./RatingBar";
 import { useRouter } from "next/navigation";
 import { getFeed, markPostViewed } from "@/app/services/posts.service";
 import { useState, useEffect } from "react";
-import { createRating, CreateRating } from "@/app/services/rating.service";
+import { createRating } from "@/app/services/rating.service";
 import { useTokenStore } from "@/stores/auth.stores";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Post } from "@/app/helper/types";
-
-type FeedProps = {
-    onRequireAuth: () => void;
-};
+import { FeedProps } from "@/app/helper/types";
+import { CreateRatingT } from "@/app/helper/types";
 
 const PREFETCH_THRESHOLD = 2;
 

@@ -13,19 +13,16 @@ import { useEffect, useRef, useState } from "react";
 import Cropper from "react-cropper";
 import type { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { CloudinaryUploadResponse,  } from "@/app/helper/types";
 
 import {
-    uploadToCloudinary,
-    CloudinaryUploadResponse,
+    uploadToCloudinary
 } from "@/app/services/cloudinary.service";
 
 import { getCroppedImage } from "./cropImage";
 import { createPostSubmission } from "@/app/services/posts.service";
 import { desc } from "motion/react-client";
-
-type UploadModalProps = {
-    onClose: () => void;
-};
+import { CropRatio, UploadModalProps } from "@/app/helper/types";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
@@ -34,11 +31,6 @@ const ALLOWED_TYPES = [
     "image/png",
     "image/webp",
 ];
-
-type CropRatio = {
-    label: string;
-    value: number;
-};
 
 const CROP_RATIOS: CropRatio[] = [
     {

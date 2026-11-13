@@ -7,12 +7,7 @@ import { Camera, X, Check } from "lucide-react";
 import { updateAvatar } from "@/app/services/user.service";
 import { uploadToCloudinary } from "@/app/services/cloudinary.service";
 import "cropperjs/dist/cropper.css";
-
-type AvatarCropModalProps = {
-  file: File;
-  onClose: () => void;
-  onUploaded: (url: string) => void;
-};
+import { AvatarCropModalProps } from "@/app/helper/types";
 
 export default function AvatarCropModal({
   file,

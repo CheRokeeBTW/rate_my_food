@@ -8,15 +8,7 @@ import { ChevronLeft, ChevronRight, Bookmark, Share2 } from "lucide-react";
 import { followUser, unfollowUser } from "@/app/services/follow.service";
 import UserAvatar from "../avatar/Avatar";
 import AverageRating from "./AverageRating";
-
-type FoodCardProps = {
-  post: Post;
-  onSwipeLeft: () => void;
-  handleNext: () => void;
-  handlePrevious: () => void;
-  canGoPrevious: boolean;
-  ratingSlot: ReactNode;
-};
+import { FoodCardProps } from "@/app/helper/types";
 
 export default function FoodCard({
   post,

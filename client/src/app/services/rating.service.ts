@@ -1,11 +1,7 @@
 import { apiFetch } from "./token.service";
+import { CreateRatingT } from "../helper/types";
 
-export type CreateRating = {
-    value: number;
-    postId: string;
-}
-
-export async function createRating({ value, postId }: CreateRating){
+export async function createRating({ value, postId }: CreateRatingT){
 
     const response = await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/ratings`, {
         method: "POST",

@@ -6,21 +6,11 @@ import { Inter } from "next/font/google";
 import { loginUser } from "@/app/services/auth.service";
 import { X } from "lucide-react";
 import { useTokenStore } from "@/stores/auth.stores";
+import { LoginFormProps, Errors } from "@/app/helper/types";
 
 const inter = Inter({
   subsets: ["latin"],
 });
-
-type LoginFormProps = {
-    onClose: () => void;
-    onSwitchToRegister: () => void;
-};
-
-type Errors = {
-  email: string;
-  password: string;
-  server: string;
-};
 
 const emptyErrors: Errors = {
   email: "",

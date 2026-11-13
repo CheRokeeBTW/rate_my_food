@@ -35,7 +35,7 @@ export class SessionsService {
         expiresAt,
       },
     });
-  }
+  };
 
   async findSession(refreshToken: string){
     const hashRefreshToken = createHash('sha256')
@@ -53,7 +53,7 @@ export class SessionsService {
     }
 
     return session;
-  }
+  };
 
   async revokeSession(refreshToken: string) {
   const session = await this.findSession(refreshToken);
@@ -66,7 +66,7 @@ export class SessionsService {
       revokedAt: new Date(),
     },
   });
- }
+ };
 
  async rotateSession(
     refreshToken: string,
@@ -122,5 +122,5 @@ export class SessionsService {
   });
 
   return newRefreshToken;
- }
+ };
 }
