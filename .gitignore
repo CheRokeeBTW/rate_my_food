@@ -1,0 +1,3 @@
+server/.env.docker
+server/.env.postgres
+backups/
