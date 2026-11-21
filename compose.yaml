@@ -1,0 +1,58 @@
+
+services:
+  rate-my-food-postgres:
+    image: postgres:17
+    container_name: rate-my-food-postgres
+    restart: unless-stopped
+    env_file:
+      - ./server/.env.postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d rate_my_food"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./server
+    container_name: rate-my-food-backend
+    restart: unless-stopped
+    env_file:
+      - ./server/.env.docker
+    ports:
+      - "3001:3001"
+    depends_on:
+      rate-my-food-postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./client
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3001
+    container_name: rate-my-food-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true
+    name: rate-my-food-network
+
+volumes:
+  postgres-data:
+    external: true
+    name: rate-my-food-postgres-data

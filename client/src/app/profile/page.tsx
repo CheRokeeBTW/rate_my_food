@@ -319,7 +319,7 @@ export default function Profile() {
 
         {posts.length === 0 && (
           <div className="mt-20 text-center text-white/40">
-            <p className="text-lg">No dishes shared yet</p>
+            <p className="text-lg">No posts shared yet</p>
             <p className="mt-2 text-sm">Your collection will appear here</p>
           </div>
         )}
