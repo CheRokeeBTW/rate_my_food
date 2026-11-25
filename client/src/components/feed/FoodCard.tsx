@@ -145,9 +145,9 @@ export default function FoodCard({
           </div>
 
           <div className="mt-1 sm:mt-8">
-            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ff795c]">
+            {/* <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ff795c]">
               On the menu
-            </p>
+            </p> */}
 
             <h2 className="break-words font-display text-[2rem] leading-[1.02] font-semibold tracking-[-0.04em] text-[#f7f3ea] sm:text-[2.45rem]">
               {post.title}
@@ -224,13 +224,12 @@ export default function FoodCard({
         </aside>
       </div>
 
-      {/* Desktop navigation */}
       <button
         type="button"
         onClick={handlePrevious}
         disabled={!canGoPrevious}
         aria-label="Previous post"
-        className="absolute left-[-64px] top-1/2 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/25 text-white/70 backdrop-blur transition hover:scale-105 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-30 lg:flex"
+        className="absolute left-[-64px] top-1/2 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/25 text-white/70 backdrop-blur transition hover:scale-105 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-30 lg:flex hover:cursor-pointer"
       >
         <ChevronLeft size={24} />
       </button>
@@ -239,7 +238,7 @@ export default function FoodCard({
         type="button"
         onClick={handleNext}
         aria-label="Next post"
-        className="absolute right-[-64px] top-1/2 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/25 text-white/70 backdrop-blur transition hover:scale-105 hover:bg-white hover:text-black lg:flex"
+        className="absolute right-[-64px] top-1/2 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/25 text-white/70 backdrop-blur transition hover:scale-105 hover:bg-white hover:text-black lg:flex hover:cursor-pointer"
       >
         <ChevronRight size={24} />
       </button>

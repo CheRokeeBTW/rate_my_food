@@ -139,7 +139,7 @@ export function Feed({ onRequireAuth } : FeedProps){
     if (!currentPost) {
         return (
             <div className="flex justify-center">
-                Loading...
+                You've seen all posts
             </div>
         );
     }

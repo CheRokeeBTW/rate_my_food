@@ -7,7 +7,9 @@ import { Post } from "../helper/types";
 import { getUsernameError } from "../helper/errorHandler";
 import UserAvatar from "@/components/avatar/Avatar";
 import AvatarCropModal from "@/components/avatar/AvatarCropModal";
+import { Icon } from "lucide-react";
 import { Pencil, Camera, ArrowLeft, Grid3X3, Check, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Profile() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -20,6 +22,8 @@ export default function Profile() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const [usernameError, setUsernameError] = useState <string | null>(null);
+  const router = useRouter();
+
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
@@ -104,28 +108,18 @@ export default function Profile() {
 
   return (
     <main className="profile-page relative min-h-[100svh] bg-[#11120f] text-[#f7f3ea]">
+          <header className="relative z-30 flex h-[72px] items-center justify-between border-b border-white/10 px-5 sm:px-8">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-white/65 transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white hover:cursor-pointer"
+          >
+            <ArrowLeft size={14} />
+            {/* <Icon name="arrowLeft" className="size-4" /> */}
+            Back to feed
+          </button>
+        </header>
       <div className="pointer-events-none fixed inset-0 profile-glow" />
       <div className="pointer-events-none fixed inset-0 noise" />
-
-      {/* Header */}
-      {/* <header className="relative z-30 flex h-[72px] items-center justify-between border-b border-white/10 px-5 sm:px-8">
-        <a href="/" className="flex items-center gap-2.5" aria-label="Crumb home">
-          <span className="grid size-8 -rotate-6 place-items-center rounded-[10px] bg-[#ff6542] text-sm font-black text-white shadow-[2px_2px_0_#f6e8c9]">
-            C
-          </span>
-          <span className="font-display text-xl font-bold tracking-[-0.04em]">
-            crumb.
-          </span>
-        </a>
-
-        <a
-          href="/"
-          className="flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-white/65 transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
-        >
-          <ArrowLeft size={14} />
-          Back to feed
-        </a>
-      </header> */}
 
       <section className="relative z-10 mx-auto max-w-[1120px] px-5 pb-16 pt-12 sm:px-8 sm:pt-16">
         <div className="mx-auto flex max-w-[760px] flex-col items-center text-center">
@@ -242,12 +236,10 @@ export default function Profile() {
         </p>
         </div>
 
-          {/* Handle */}
           <p className="mt-4 text-sm font-medium text-white/50">
             @{username.toLowerCase().replace(/\s+/g, ".")}
           </p>
 
-          {/* Stats */}
           <div className="mt-8 flex items-stretch overflow-hidden rounded-2xl border border-white/10 bg-white/[0.045]">
             <div className="min-w-32 px-8 py-4">
               <p className="font-display text-2xl font-semibold">{posts.length}</p>
@@ -283,12 +275,11 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Posts grid */}
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {posts.map((post) => (
             <div
               key={post.id}
-              className="profile-card group overflow-hidden rounded-[22px] border border-white/10 bg-[#1a1b17] text-left transition hover:-translate-y-1 hover:border-white/20"
+              className="profile-card group overflow-hidden rounded-[22px] border border-white/10 bg-[#1a1b17] text-left transition hover:-translate-y-1 hover:border-white/20 hover:cursor-pointer"
             >
               <div className="relative aspect-[4/5] overflow-hidden">
                 <Image
