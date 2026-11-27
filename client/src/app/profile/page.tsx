@@ -7,7 +7,6 @@ import { Post } from "../helper/types";
 import { getUsernameError } from "../helper/errorHandler";
 import UserAvatar from "@/components/avatar/Avatar";
 import AvatarCropModal from "@/components/avatar/AvatarCropModal";
-import { Icon } from "lucide-react";
 import { Pencil, Camera, ArrowLeft, Grid3X3, Check, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -23,7 +22,6 @@ export default function Profile() {
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const [usernameError, setUsernameError] = useState <string | null>(null);
   const router = useRouter();
-
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
@@ -114,7 +112,6 @@ export default function Profile() {
             className="flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-white/65 transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white hover:cursor-pointer"
           >
             <ArrowLeft size={14} />
-            {/* <Icon name="arrowLeft" className="size-4" /> */}
             Back to feed
           </button>
         </header>
@@ -159,7 +156,6 @@ export default function Profile() {
           </p>
 
         <div className="mt-7 w-full">
-        
         <div className="profile-name-row grid min-h-[56px] w-full grid-cols-[1fr_auto_1fr] items-center gap-2">
           {isChangingName ? (
             <>
@@ -259,7 +255,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Collection header */}
         <div className="mt-16 flex items-end justify-between border-b border-white/10 pb-4">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#ff795c]">
