@@ -81,7 +81,7 @@ describe('AuthController', () => {
         {
           httpOnly: true,
           secure: false,
-          sameSite: 'lax',
+          sameSite: 'none',
           maxAge: 1000 * 60 * 60 * 24 * 7,
         },
       );
@@ -123,7 +123,7 @@ describe('AuthController', () => {
         {
           httpOnly: true,
           secure: false,
-          sameSite: 'lax',
+          sameSite: 'none',
           maxAge: 1000 * 60 * 60 * 24 * 7,
         },
       );
@@ -166,7 +166,7 @@ describe('AuthController', () => {
         {
           httpOnly: true,
           secure: false,
-          sameSite: 'lax',
+          sameSite: 'none',
           maxAge: 1000 * 60 * 60 * 24 * 7,
         },
       );
@@ -218,6 +218,11 @@ describe('AuthController', () => {
 
       expect(response.clearCookie).toHaveBeenCalledWith(
         'refresh_token',
+        {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'none',
+        },
       );
     });
 
@@ -243,6 +248,11 @@ describe('AuthController', () => {
 
       expect(response.clearCookie).toHaveBeenCalledWith(
         'refresh_token',
+        {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'none',
+        },
       );
     });
   });
